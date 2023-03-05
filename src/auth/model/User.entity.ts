@@ -1,9 +1,11 @@
-import { Column, Entity, Index, PrimaryColumn } from 'typeorm';
+import { Column, Entity, Index, PrimaryColumn, Repository } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
 import { IsBoolean, IsEmail, IsNumber, IsString } from 'class-validator';
+import { InjectRepository } from '@nestjs/typeorm';
+import { AuthJoinDto } from './dto/auth.join.dto';
 
 @Entity()
-export class AuthEntity {
+export class UserEntity {
   @PrimaryColumn()
   @ApiProperty({ description: '유저 고유번호' })
   _id: string;
@@ -39,7 +41,10 @@ export class AuthEntity {
   @IsEmail()
   email: string;
 
-  @ApiProperty({ description: '휴대폰 번호 (국가 코드 불필요)', required: true })
+  @ApiProperty({
+    description: '휴대폰 번호 (국가 코드 불필요)',
+    required: true,
+  })
   @Column()
   @IsNumber()
   phone: number;
@@ -50,6 +55,6 @@ export class AuthEntity {
   nickname: string;
 
   @ApiProperty({ description: '프로필 이미지 저장 경로' })
-  @Column()
+  @Column({ default: '/' })
   profileimg: string;
 }
