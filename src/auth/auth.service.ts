@@ -1,15 +1,19 @@
-import { HttpCode, Injectable } from '@nestjs/common';
-import { AuthJoinDto } from './model/dto/auth.join.dto';
+import { Injectable } from '@nestjs/common';
+import { AuthJoinDto } from './model/dto/request/auth.join.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserEntity } from './model/User.entity';
 import { Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
+import { NormalResponseDto } from './model/dto/response/normal.response.dto';
+import { ErrorResponseDto } from './model/dto/response/error.response.dto';
 
 @Injectable()
 export class AuthService {
   constructor(
     @InjectRepository(UserEntity)
-    private userRepository: Repository<UserEntity>
+    private userRepository: Repository<UserEntity>,
+    private ResponseDto: NormalResponseDto,
+    private ErrorResponseDto: ErrorResponseDto,
   ) {
     this.userRepository = userRepository;
   }
@@ -18,30 +22,14 @@ export class AuthService {
     try {
       const found = await this.userRepository.findOneBy({ id: body.id });
       if (found) {
-        return {
-          statusCode: 401,
-          data: {
-            message: '이미 등록된 사용자입니다.'
-          }
-        };
+        return this.ResponseDto.set(401, '이미 등록된 ID입니다.');
       }
       body.pw = await bcrypt.hash(body.pw, 12);
-      body._id = "test"
+      body._id = 'test2'; //랜덤 값 생성 후 기존에 있는지 검증해야함.
       await this.userRepository.save(body);
-      return {
-        statusCode: 201,
-        data: { message: '정상적으로 등록되었습니다.' }
-      };
-
+      return this.ResponseDto.set(201, '정상적으로 등록되었습니다');
     } catch (e) {
-      console.log(e);
-      return {
-        statusCode: 500,
-        data: {
-          message: '서버측 에러가 발생했습니다.',
-          error: e
-        }
-      };
+      return this.ErrorResponseDto.set(500, '서버측 오류가 발생했습니다', e);
     }
   }
 }
