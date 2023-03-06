@@ -26,9 +26,4 @@ import { UserEntity } from './auth/model/User.entity';
   providers: [AppService],
   exports: [ConfigModule],
 })
-export class AppModule {
-  /**테스트를 목적으로 사용했음*/
-  constructor() {
-    /*console.log(process.env.DB_PORT);*/
-  }
-}
+export class AppModule {}

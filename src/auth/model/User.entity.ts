@@ -80,4 +80,6 @@ export class UserEntity {
   @ApiProperty({ description: '프로필 이미지 저장 경로', example: '/' })
   @Column({ default: '/' })
   profileimg: string;
+
+  jwtid: string;
 }
