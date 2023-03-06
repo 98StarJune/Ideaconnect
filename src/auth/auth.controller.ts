@@ -7,6 +7,7 @@ import { NormalResponseDto } from './model/dto/response/normal.response.dto';
 import { ErrorResponseDto } from './model/dto/response/error.response.dto';
 import { AuthCheckDto } from './model/dto/request/auth.check.dto';
 import { AuthJwtDto } from './model/dto/request/auth.jwt.dto';
+import { AuthLoginDto } from './model/dto/request/auth.login.dto';
 
 @ApiTags('회원 정보 관리')
 @Controller('auth')
@@ -49,6 +50,20 @@ export class AuthController {
     @Res() res: Response,
   ) {
     await this.authService.check(jwt, body);
+    if (this.NormalResponseDto.get('statusCode')) {
+      return res
+        .status(<number>this.NormalResponseDto.get('statusCode'))
+        .json(this.NormalResponseDto);
+    }
+    return res
+      .status(<number>this.ErrorResponseDto.get('statusCode'))
+      .json(this.ErrorResponseDto);
+  }
+
+  @Post('login')
+  @ApiOperation({ summary: '로그인' })
+  async login(@Body() body: AuthLoginDto, @Res() res: Response) {
+    await this.authService.login(body);
     if (this.NormalResponseDto.get('statusCode')) {
       return res
         .status(<number>this.NormalResponseDto.get('statusCode'))

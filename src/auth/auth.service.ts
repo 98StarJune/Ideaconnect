@@ -7,6 +7,9 @@ import * as bcrypt from 'bcrypt';
 import { NormalResponseDto } from './model/dto/response/normal.response.dto';
 import { ErrorResponseDto } from './model/dto/response/error.response.dto';
 import { AuthCheckDto } from './model/dto/request/auth.check.dto';
+import { AuthJwtDto } from './model/dto/request/auth.jwt.dto';
+import { AuthLoginDto } from './model/dto/request/auth.login.dto';
+import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class AuthService {
@@ -15,6 +18,7 @@ export class AuthService {
     private userRepository: Repository<UserEntity>,
     private ResponseDto: NormalResponseDto,
     private ErrorResponseDto: ErrorResponseDto,
+    private jwtService: JwtService,
   ) {
     this.userRepository = userRepository;
   }
@@ -34,17 +38,38 @@ export class AuthService {
     }
   }
 
-  async check(auth, body: AuthCheckDto) {
+  async check(jwt: AuthJwtDto, body: AuthCheckDto) {
     try {
-      const found = await this.userRepository.findOneBy({ id: auth });
-      if (!found) {
+      const user = await this.userRepository.findOneBy({ id: 'test' });
+      //jwt 분해 로직 빠짐
+      if (!user) {
         return this.ResponseDto.set(401, '일치하지 않습니다.');
       }
-      const result = await bcrypt.compare(body.pw, found.pw);
+      const result = await bcrypt.compare(body.pw, user.pw);
       if (result) {
         return this.ResponseDto.set(201, '일치합니다.');
       }
       return this.ResponseDto.set(401, '일치하지 않습니다.');
+    } catch (e) {
+      return this.ErrorResponseDto.set(500, '서버측 오류가 발생했습니다', e);
+    }
+  }
+
+  async login(body: AuthLoginDto) {
+    try {
+      const user = await this.userRepository.findOneBy({ id: body.id });
+      if (!user) {
+        return this.ResponseDto.set(401, '입력된 정보가 올바르지 않습니다');
+      }
+      const checked = await bcrypt.compare(body.pw, user.pw);
+      if (checked === false) {
+        return this.ResponseDto.set(401, '입력된 정보가 올바르지 않습니다');
+      }
+      const jwt = this.jwtService.sign(
+        { id: body.id },
+        { secret: process.env.SECRET, expiresIn: '10m' },
+      );
+      return this.ResponseDto.set(201, jwt);
     } catch (e) {
       return this.ErrorResponseDto.set(500, '서버측 오류가 발생했습니다', e);
     }
