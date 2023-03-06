@@ -7,7 +7,6 @@ import * as bcrypt from 'bcrypt';
 import { NormalResponseDto } from './model/dto/response/normal.response.dto';
 import { ErrorResponseDto } from './model/dto/response/error.response.dto';
 import { AuthCheckDto } from './model/dto/request/auth.check.dto';
-import { AuthJwtDto } from './model/dto/request/auth.jwt.dto';
 import { AuthLoginDto } from './model/dto/request/auth.login.dto';
 import { JwtService } from '@nestjs/jwt';
 
@@ -30,7 +29,13 @@ export class AuthService {
         return this.ResponseDto.set(401, '이미 등록된 ID입니다.');
       }
       body.pw = await bcrypt.hash(body.pw, 12);
-      body._id = 'test2'; //랜덤 값 생성 후 기존에 있는지 검증해야함.
+      while (1) {
+        body._id = Math.random().toString(36).slice(2);
+        const _idtest = await this.userRepository.findOneBy({ _id: body._id });
+        if (!_idtest) {
+          break;
+        }
+      }
       await this.userRepository.save(body);
       return this.ResponseDto.set(201, '정상적으로 등록되었습니다');
     } catch (e) {
@@ -38,10 +43,9 @@ export class AuthService {
     }
   }
 
-  async check(jwt: AuthJwtDto, body: AuthCheckDto) {
+  async check(body: AuthCheckDto) {
     try {
-      const user = await this.userRepository.findOneBy({ id: 'test' });
-      //jwt 분해 로직 빠짐
+      const user = await this.userRepository.findOneBy({ id: body.jwtid });
       if (!user) {
         return this.ResponseDto.set(401, '일치하지 않습니다.');
       }
@@ -67,7 +71,7 @@ export class AuthService {
       }
       const jwt = this.jwtService.sign(
         { id: body.id },
-        { secret: process.env.SECRET, expiresIn: '10m' },
+        { expiresIn: '30m', secret: process.env.SECRET },
       );
       return this.ResponseDto.set(201, jwt);
     } catch (e) {
