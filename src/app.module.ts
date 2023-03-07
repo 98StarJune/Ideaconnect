@@ -33,6 +33,10 @@ import { JwtService } from '@nestjs/jwt';
 })
 export class AppModule {
   configure(consumer: MiddlewareConsumer) {
-    consumer.apply(JwtMiddleware).exclude('auth/login', 'auth/join').forRoutes('auth', 'idea').apply();
+    consumer
+      .apply(JwtMiddleware)
+      .exclude('auth/login', 'auth/join')
+      .forRoutes('auth', 'idea')
+      .apply();
   }
 }
