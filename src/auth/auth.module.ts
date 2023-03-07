@@ -19,8 +19,4 @@ import { JwtMiddleware } from '../jwt/jwt.middleware';
     JwtMiddleware,
   ],
 })
-export class AuthModule {
-  configure(consumer: MiddlewareConsumer) {
-    consumer.apply(JwtMiddleware).exclude('auth/login').forRoutes('auth/check');
-  }
-}
+export class AuthModule {}

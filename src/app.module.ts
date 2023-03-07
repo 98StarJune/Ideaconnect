@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
@@ -8,6 +8,8 @@ import * as process from 'process';
 import { UserEntity } from './model/User.entity';
 import { IdeaModule } from './idea/idea.module';
 import { IdeaEntity } from './model/idea.entity';
+import { JwtMiddleware } from './jwt/jwt.middleware';
+import { JwtService } from '@nestjs/jwt';
 
 @Module({
   imports: [
@@ -26,7 +28,11 @@ import { IdeaEntity } from './model/idea.entity';
     IdeaModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
-  exports: [ConfigModule, TypeOrmModule],
+  providers: [AppService, JwtMiddleware, JwtService],
+  exports: [ConfigModule],
 })
-export class AppModule {}
+export class AppModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(JwtMiddleware).exclude('auth/login', 'auth/join').forRoutes('auth', 'idea').apply();
+  }
+}
