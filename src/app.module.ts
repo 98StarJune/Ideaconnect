@@ -7,6 +7,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import * as process from 'process';
 import { UserEntity } from './model/User.entity';
 import { IdeaModule } from './idea/idea.module';
+import { IdeaEntity } from './model/idea.entity';
 
 @Module({
   imports: [
@@ -18,7 +19,7 @@ import { IdeaModule } from './idea/idea.module';
       username: process.env.DB_USERNAME,
       password: process.env.DB_PASSWORD,
       database: 'idea',
-      entities: [UserEntity],
+      entities: [UserEntity, IdeaEntity],
       synchronize: true,
     }),
     AuthModule,
@@ -26,6 +27,6 @@ import { IdeaModule } from './idea/idea.module';
   ],
   controllers: [AppController],
   providers: [AppService],
-  exports: [ConfigModule],
+  exports: [ConfigModule, TypeOrmModule],
 })
 export class AppModule {}
