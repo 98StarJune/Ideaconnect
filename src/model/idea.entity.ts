@@ -1,15 +1,18 @@
 import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
+import { IsString } from 'class-validator';
 
 @Entity()
 export class IdeaEntity {
+  jwtid: string;
+
   @PrimaryGeneratedColumn()
-  @ApiProperty({ description: '게시글 고유 번호', required: true })
+  @ApiProperty({ description: '게시글 고유 번호' })
   _id: string;
 
   @Column()
   @ApiProperty({ description: '작성자', required: true })
-  creater: string;
+  creator: string;
 
   @Column()
   @ApiProperty({
@@ -17,6 +20,7 @@ export class IdeaEntity {
     required: true,
     example: 'UN에서 제시한 문제를 해결합니다',
   })
+  @IsString()
   title: string;
 
   @Column()
@@ -25,7 +29,13 @@ export class IdeaEntity {
     required: true,
     example: '제 아이디어를 소개합니다',
   })
+  @IsString()
   introduce: string;
+
+  @Column({ type: 'text' })
+  @ApiProperty({ description: '본문', required: true })
+  @IsString()
+  text: string;
 
   @Column()
   @ApiProperty({ description: '최초 작성일', required: true })
@@ -38,7 +48,6 @@ export class IdeaEntity {
   @Column()
   @ApiProperty({
     description: '아아디어 상태',
-    required: true,
     example: ['ready', 'processing', 'complete'],
   })
   status: string;
