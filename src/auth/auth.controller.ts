@@ -1,6 +1,6 @@
 import { Body, Controller, Post, Res } from '@nestjs/common';
 import { AuthJoinDto } from '../model/dto/request/auth/auth.join.dto';
-import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiResponse, ApiSecurity, ApiTags } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
 import { Response } from 'express';
 import { NormalResponseDto } from '../model/dto/response/normal.response.dto';
@@ -8,7 +8,7 @@ import { ErrorResponseDto } from '../model/dto/response/error.response.dto';
 import { AuthCheckDto } from '../model/dto/request/auth/auth.check.dto';
 import { AuthLoginDto } from '../model/dto/request/auth/auth.login.dto';
 
-@ApiTags('회원 정보 관리')
+@ApiTags('회원 정보')
 @Controller('auth')
 export class AuthController {
   constructor(
@@ -43,6 +43,7 @@ export class AuthController {
     type: NormalResponseDto,
   })
   @ApiResponse({ status: 501, description: '서버오류', type: ErrorResponseDto })
+  @ApiSecurity('JWT')
   async check(@Body() body: AuthCheckDto, @Res() res: Response) {
     await this.authService.check(body);
     if (this.NormalResponseDto.get('statusCode')) {

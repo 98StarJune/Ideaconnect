@@ -10,10 +10,10 @@ async function bootstrap() {
   const config = new DocumentBuilder()
     .setTitle('Idea Connect API Document')
     .setDescription(
-      '2023 Google Solution Challenge Project : Created by 배성준'
+      '2023 Google Solution Challenge Project : Created by 배성준',
     )
-    .setVersion('0.0.1')
-    .addTag('ideaconnect')
+    .setVersion('0.1.4')
+    .addBearerAuth()
     .build();
   app.useGlobalPipes(
     new ValidationPipe({
@@ -22,7 +22,19 @@ async function bootstrap() {
     }),
   );
   const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('apidoc', app, document);
+  const swaggerOptions = {
+    swaggerOptions: {
+      securityDefinitions: {
+        JWT: {
+          type: 'apiKey',
+          name: 'JWT',
+          scheme: 'bearer',
+          in: 'header',
+        },
+      },
+    },
+  };
+  SwaggerModule.setup('apidoc', app, document, swaggerOptions);
   await app.listen(process.env.PORT);
 }
 
