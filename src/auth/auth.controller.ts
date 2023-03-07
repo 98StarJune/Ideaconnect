@@ -1,12 +1,12 @@
 import { Body, Controller, Post, Res } from '@nestjs/common';
-import { AuthJoinDto } from '../model/dto/request/auth.join.dto';
+import { AuthJoinDto } from '../model/dto/request/auth/auth.join.dto';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
 import { Response } from 'express';
 import { NormalResponseDto } from '../model/dto/response/normal.response.dto';
 import { ErrorResponseDto } from '../model/dto/response/error.response.dto';
-import { AuthCheckDto } from '../model/dto/request/auth.check.dto';
-import { AuthLoginDto } from '../model/dto/request/auth.login.dto';
+import { AuthCheckDto } from '../model/dto/request/auth/auth.check.dto';
+import { AuthLoginDto } from '../model/dto/request/auth/auth.login.dto';
 
 @ApiTags('회원 정보 관리')
 @Controller('auth')

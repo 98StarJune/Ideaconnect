@@ -1,13 +1,13 @@
 import { Injectable } from '@nestjs/common';
-import { AuthJoinDto } from '../model/dto/request/auth.join.dto';
+import { AuthJoinDto } from '../model/dto/request/auth/auth.join.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserEntity } from '../model/User.entity';
 import { Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import { NormalResponseDto } from '../model/dto/response/normal.response.dto';
 import { ErrorResponseDto } from '../model/dto/response/error.response.dto';
-import { AuthCheckDto } from '../model/dto/request/auth.check.dto';
-import { AuthLoginDto } from '../model/dto/request/auth.login.dto';
+import { AuthCheckDto } from '../model/dto/request/auth/auth.check.dto';
+import { AuthLoginDto } from '../model/dto/request/auth/auth.login.dto';
 import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
