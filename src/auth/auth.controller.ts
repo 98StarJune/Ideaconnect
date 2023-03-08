@@ -1,6 +1,11 @@
 import { Body, Controller, Post, Res } from '@nestjs/common';
 import { AuthJoinDto } from '../model/dto/request/auth/auth.join.dto';
-import { ApiOperation, ApiResponse, ApiSecurity, ApiTags } from '@nestjs/swagger';
+import {
+  ApiOperation,
+  ApiResponse,
+  ApiSecurity,
+  ApiTags,
+} from '@nestjs/swagger';
 import { AuthService } from './auth.service';
 import { Response } from 'express';
 import { NormalResponseDto } from '../model/dto/response/normal.response.dto';
@@ -13,8 +18,8 @@ import { AuthLoginDto } from '../model/dto/request/auth/auth.login.dto';
 export class AuthController {
   constructor(
     private authService: AuthService,
-    private NormalResponseDto: NormalResponseDto,
-    private ErrorResponseDto: ErrorResponseDto,
+    private Resp: NormalResponseDto,
+    private EResp: ErrorResponseDto,
   ) {}
 
   @ApiOperation({ summary: '회원가입을 처리합니다.' })
@@ -23,15 +28,12 @@ export class AuthController {
   @ApiResponse({ status: 500, description: '서버오류', type: ErrorResponseDto })
   @Post('join')
   async join(@Body() body: AuthJoinDto, @Res() res: Response) {
-    await this.authService.join(body);
-    if (this.NormalResponseDto.get('statusCode')) {
-      return res
-        .status(<number>this.NormalResponseDto.get('statusCode'))
-        .json(this.NormalResponseDto);
+    const result = await this.authService.join(body);
+    // console.log(result === this.Resp);
+    if (result !== this.Resp) {
+      return res.status(this.EResp.statusCode).json(this.EResp);
     }
-    return res
-      .status(<number>this.ErrorResponseDto.get('statusCode'))
-      .json(this.ErrorResponseDto);
+    return res.status(this.Resp.statusCode).json(this.Resp);
   }
 
   @Post('check')
@@ -45,28 +47,20 @@ export class AuthController {
   @ApiResponse({ status: 501, description: '서버오류', type: ErrorResponseDto })
   @ApiSecurity('JWT')
   async check(@Body() body: AuthCheckDto, @Res() res: Response) {
-    await this.authService.check(body);
-    if (this.NormalResponseDto.get('statusCode')) {
-      return res
-        .status(<number>this.NormalResponseDto.get('statusCode'))
-        .json(this.NormalResponseDto);
+    const result = await this.authService.check(body);
+    if (result !== this.Resp) {
+      return res.status(this.EResp.statusCode).json(this.EResp);
     }
-    return res
-      .status(<number>this.ErrorResponseDto.get('statusCode'))
-      .json(this.ErrorResponseDto);
+    return res.status(this.Resp.statusCode).json(this.Resp);
   }
 
   @Post('login')
   @ApiOperation({ summary: '로그인' })
   async login(@Body() body: AuthLoginDto, @Res() res: Response) {
-    await this.authService.login(body);
-    if (this.NormalResponseDto.get('statusCode')) {
-      return res
-        .status(<number>this.NormalResponseDto.get('statusCode'))
-        .json(this.NormalResponseDto);
+    const result = await this.authService.login(body);
+    if (result !== this.Resp) {
+      return res.status(this.EResp.statusCode).json(this.EResp);
     }
-    return res
-      .status(<number>this.ErrorResponseDto.get('statusCode'))
-      .json(this.ErrorResponseDto);
+    return res.status(this.Resp.statusCode).json(this.Resp);
   }
 }

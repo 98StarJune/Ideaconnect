@@ -1,20 +1,7 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { PickType } from '@nestjs/swagger';
+import { ResponseEntity } from '../../response.entity';
 
-export class NormalResponseDto {
-  @ApiProperty({ description: '응답 코드' })
-  protected statusCode: number;
-  @ApiProperty({ description: '응답 메세지' })
-  protected message: string;
-
-  set(statusCode: number, Message: string) {
-    this.statusCode = statusCode;
-    this.message = Message;
-  }
-
-  get(params: string) {
-    if (params === 'statusCode') {
-      return this.statusCode;
-    }
-    return this.message;
-  }
-}
+export class NormalResponseDto extends PickType(ResponseEntity, [
+  'statusCode',
+  'message',
+]) {}

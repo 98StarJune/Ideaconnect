@@ -5,14 +5,15 @@ import { IdeaEntity } from '../model/idea.entity';
 import { NormalResponseDto } from '../model/dto/response/normal.response.dto';
 import { ErrorResponseDto } from '../model/dto/response/error.response.dto';
 import { InjectRepository } from '@nestjs/typeorm';
+import { ListIdeaResponseDto } from '../model/dto/response/list.idea.response.dto';
 
 @Injectable()
 export class IdeaService {
   constructor(
     @InjectRepository(IdeaEntity)
     private ideaRepository: Repository<IdeaEntity>,
-    private ResponseDto: NormalResponseDto,
-    private ErrorResponseDto: ErrorResponseDto,
+    private Resp: NormalResponseDto,
+    private EResp: ErrorResponseDto,
   ) {
     this.ideaRepository = ideaRepository;
   } //private
@@ -24,9 +25,21 @@ export class IdeaService {
     body.view_counter = 0;
     try {
       await this.ideaRepository.save(body);
-      return this.ResponseDto.set(201, '등록되었습니다.');
+      this.Resp.statusCode = 201;
+      this.Resp.message = '정상적으로 등록되었습니다';
+      return this.Resp;
     } catch (e) {
-      return this.ErrorResponseDto.set(500, '서버측 에러가 발생했습니다.', e);
+      this.EResp.statusCode = 201;
+      this.EResp.error = e;
+      return this.EResp;
     }
+  }
+
+  async list(): Promise<
+    ListIdeaResponseDto | ErrorResponseDto | NormalResponseDto
+  > {
+    const test = await this.ideaRepository.find();
+    console.log(test);
+    return;
   }
 }

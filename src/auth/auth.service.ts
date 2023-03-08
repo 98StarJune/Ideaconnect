@@ -15,18 +15,20 @@ export class AuthService {
   constructor(
     @InjectRepository(UserEntity)
     private userRepository: Repository<UserEntity>,
-    private ResponseDto: NormalResponseDto,
-    private ErrorResponseDto: ErrorResponseDto,
+    private Resp: NormalResponseDto,
+    private EResp: ErrorResponseDto,
     private jwtService: JwtService,
   ) {
     this.userRepository = userRepository;
   }
 
-  async join(body: AuthJoinDto) {
+  async join(body: AuthJoinDto): Promise<NormalResponseDto | ErrorResponseDto> {
     try {
       const found = await this.userRepository.findOneBy({ id: body.id });
       if (found) {
-        return this.ResponseDto.set(401, '이미 등록된 ID입니다.');
+        this.Resp.statusCode = 401;
+        this.Resp.message = '이미 등록된 ID입니다.';
+        return this.Resp;
       }
       body.pw = await bcrypt.hash(body.pw, 12);
       while (1) {
@@ -37,45 +39,69 @@ export class AuthService {
         }
       }
       await this.userRepository.save(body);
-      return this.ResponseDto.set(201, '정상적으로 등록되었습니다');
+      this.Resp.statusCode = 201;
+      this.Resp.message = '정상적으로 등록되었습니다';
+      return this.Resp;
     } catch (e) {
-      return this.ErrorResponseDto.set(500, '서버측 오류가 발생했습니다', e);
+      this.EResp.message = '서버측 오류가 발생했습니다';
+      this.EResp.error = e;
+      return this.EResp;
     }
   }
 
-  async check(body: AuthCheckDto) {
+  async check(
+    body: AuthCheckDto,
+  ): Promise<NormalResponseDto | ErrorResponseDto> {
     try {
       const user = await this.userRepository.findOneBy({ id: body.jwtid });
       if (!user) {
-        return this.ResponseDto.set(401, '일치하지 않습니다.');
+        this.Resp.statusCode = 401;
+        this.Resp.message = '일치하지 않습니다.';
+        return this.Resp;
       }
       const result = await bcrypt.compare(body.pw, user.pw);
       if (result) {
-        return this.ResponseDto.set(201, '일치합니다.');
+        this.Resp.statusCode = 201;
+        this.Resp.message = '일치합니다';
+        return this.Resp;
       }
-      return this.ResponseDto.set(401, '일치하지 않습니다.');
+      this.Resp.statusCode = 401;
+      this.Resp.message = '일치하지 않습니다.';
+      return this.Resp;
     } catch (e) {
-      return this.ErrorResponseDto.set(500, '서버측 오류가 발생했습니다', e);
+      this.EResp.statusCode = 500;
+      this.EResp.error = e;
+      return this.EResp;
     }
   }
 
-  async login(body: AuthLoginDto) {
+  async login(
+    body: AuthLoginDto,
+  ): Promise<NormalResponseDto | ErrorResponseDto> {
     try {
       const user = await this.userRepository.findOneBy({ id: body.id });
       if (!user) {
-        return this.ResponseDto.set(401, '입력된 정보가 올바르지 않습니다');
+        this.Resp.statusCode = 401;
+        this.Resp.message = '입력된 정보가 올바르지 않습니다.';
+        return this.Resp;
       }
       const checked = await bcrypt.compare(body.pw, user.pw);
       if (checked === false) {
-        return this.ResponseDto.set(401, '입력된 정보가 올바르지 않습니다');
+        this.Resp.statusCode = 401;
+        this.Resp.message = '입력된 정보가 올바르지 않습니다.';
+        return this.Resp;
       }
       const jwt = this.jwtService.sign(
         { id: body.id },
         { expiresIn: '30m', secret: process.env.SECRET },
       );
-      return this.ResponseDto.set(201, jwt);
+      this.Resp.statusCode = 201;
+      this.Resp.message = jwt; //여기는 JWT 전용 Return Dto를 생성하자
+      return this.Resp;
     } catch (e) {
-      return this.ErrorResponseDto.set(500, '서버측 오류가 발생했습니다', e);
+      this.EResp.statusCode = 401;
+      this.EResp.error = e;
+      return this.EResp;
     }
   }
 }

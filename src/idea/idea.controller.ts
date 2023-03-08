@@ -1,4 +1,4 @@
-import { Body, Controller, Post, Res } from '@nestjs/common';
+import { Body, Controller, Get, Post, Res } from '@nestjs/common';
 import { IdeaService } from './idea.service';
 import { IdeaCreateDto } from '../model/dto/request/idea/idea.create.dto';
 import { Response } from 'express';
@@ -17,8 +17,8 @@ import {
 export class IdeaController {
   constructor(
     private IdeaService: IdeaService,
-    private NormalResponseDto: NormalResponseDto,
-    private ErrorResponseDto: ErrorResponseDto,
+    private Resp: NormalResponseDto,
+    private EResp: ErrorResponseDto,
   ) {}
 
   @Post('create')
@@ -30,14 +30,17 @@ export class IdeaController {
   })
   @ApiResponse({ status: 500, description: '서버에러', type: ErrorResponseDto })
   async create(@Body() body: IdeaCreateDto, @Res() res: Response) {
-    await this.IdeaService.create(body);
-    if (this.NormalResponseDto.get('statusCode')) {
-      return res
-        .status(<number>this.NormalResponseDto.get('statusCode'))
-        .json(this.NormalResponseDto);
+    const result = await this.IdeaService.create(body);
+    if (result !== this.Resp) {
+      return res.status(this.EResp.statusCode).json(this.EResp);
     }
-    return res
-      .status(<number>this.ErrorResponseDto.get('statusCode'))
-      .json(this.ErrorResponseDto);
+    return res.status(this.Resp.statusCode).json(this.Resp);
+  }
+  @Get('list')
+  @ApiOperation({ summary: '게시글 목록을 조회합니다.' })
+  //@ApiResponse()
+  async list() {
+    const result = await this.IdeaService.list();
+    return '테스트 중입니다.';
   }
 }
