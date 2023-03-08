@@ -5,7 +5,7 @@ import { IdeaEntity } from '../model/idea.entity';
 import { NormalResponseDto } from '../model/dto/response/normal.response.dto';
 import { ErrorResponseDto } from '../model/dto/response/error.response.dto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { ListIdeaResponseDto } from '../model/dto/response/list.idea.response.dto';
+import { dataIdeaDto } from '../model/dto/response/data.idea.dto';
 
 @Injectable()
 export class IdeaService {
@@ -13,10 +13,11 @@ export class IdeaService {
     @InjectRepository(IdeaEntity)
     private ideaRepository: Repository<IdeaEntity>,
     private Resp: NormalResponseDto,
+    private dataResp: dataIdeaDto,
     private EResp: ErrorResponseDto,
   ) {
     this.ideaRepository = ideaRepository;
-  } //private
+  }
   async create(body: IdeaCreateDto) {
     body.creator = body.jwtid;
     body.first_date = new Date().toString();
@@ -35,11 +36,31 @@ export class IdeaService {
     }
   }
 
-  async list(): Promise<
-    ListIdeaResponseDto | ErrorResponseDto | NormalResponseDto
-  > {
-    const test = await this.ideaRepository.find();
-    console.log(test);
-    return;
+  async list(): Promise<dataIdeaDto | ErrorResponseDto> {
+    try {
+      const result = await this.ideaRepository.find({
+        take: 10,
+        select: {
+          _id: true,
+          creator: true,
+          title: true,
+          first_date: true,
+          update_date: true,
+          status: true,
+          view_counter: true,
+        },
+      });
+      if (!result[0]) {
+        throw new Error('Check Out the Database');
+      }
+      this.dataResp.statusCode = 201;
+      this.dataResp.data = result;
+      return this.dataResp;
+    } catch (e) {
+      console.log(e);
+      this.EResp.statusCode = 500;
+      this.EResp.error = e;
+      return this.EResp;
+    }
   }
 }

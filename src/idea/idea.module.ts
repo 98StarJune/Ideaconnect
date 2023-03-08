@@ -7,6 +7,7 @@ import { NormalResponseDto } from '../model/dto/response/normal.response.dto';
 import { ErrorResponseDto } from '../model/dto/response/error.response.dto';
 import { JwtMiddleware } from '../jwt/jwt.middleware';
 import { JwtService } from '@nestjs/jwt';
+import { dataIdeaDto } from '../model/dto/response/data.idea.dto';
 
 @Module({
   imports: [TypeOrmModule.forFeature([IdeaEntity])],
@@ -15,6 +16,7 @@ import { JwtService } from '@nestjs/jwt';
     IdeaService,
     NormalResponseDto,
     ErrorResponseDto,
+    dataIdeaDto,
     JwtMiddleware,
     JwtService,
   ],

@@ -10,6 +10,7 @@ import {
   ApiSecurity,
   ApiTags,
 } from '@nestjs/swagger';
+import { dataIdeaDto } from '../model/dto/response/data.idea.dto';
 
 @ApiTags('아이디어 게시물 정보')
 @Controller('idea')
@@ -19,6 +20,7 @@ export class IdeaController {
     private IdeaService: IdeaService,
     private Resp: NormalResponseDto,
     private EResp: ErrorResponseDto,
+    private IdeaResp: dataIdeaDto,
   ) {}
 
   @Post('create')
@@ -27,6 +29,11 @@ export class IdeaController {
     status: 201,
     description: '정상등록',
     type: NormalResponseDto,
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'JWT 오류',
+    type: ErrorResponseDto,
   })
   @ApiResponse({ status: 500, description: '서버에러', type: ErrorResponseDto })
   async create(@Body() body: IdeaCreateDto, @Res() res: Response) {
@@ -38,9 +45,27 @@ export class IdeaController {
   }
   @Get('list')
   @ApiOperation({ summary: '게시글 목록을 조회합니다.' })
-  //@ApiResponse()
-  async list() {
+  @ApiResponse({
+    status: 201,
+    description: '조회 완료',
+    type: dataIdeaDto,
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'JWT 오류',
+    type: ErrorResponseDto,
+  })
+  async list(@Res() res: Response) {
     const result = await this.IdeaService.list();
-    return '테스트 중입니다.';
+    switch (result) {
+      case this.IdeaResp:
+        return res.status(this.IdeaResp.statusCode).json(this.IdeaResp);
+      case this.EResp:
+        return res.status(this.EResp.statusCode).json(this.EResp.error);
+      default:
+        return res
+          .status(500)
+          .json({ message: '알 수 없는 오류가 발생했습니다.' });
+    }
   }
 }
