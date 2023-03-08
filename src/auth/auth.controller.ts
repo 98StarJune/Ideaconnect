@@ -42,6 +42,11 @@ export class AuthController {
   @ApiOperation({ summary: 'ID 및 Pw의 일치 여부를 확인합니다' })
   @ApiResponse({ status: 201, description: '일치', type: NormalResponseDto })
   @ApiResponse({
+    status: 400,
+    description: 'JWT 오류',
+    type: ErrorResponseDto,
+  })
+  @ApiResponse({
     status: 401,
     description: 'ID 또는 PW가 일치하지 않음',
     type: NormalResponseDto,
@@ -59,7 +64,11 @@ export class AuthController {
   @Post('login')
   @ApiOperation({ summary: '로그인' })
   @ApiResponse({ status: 201, description: '일치', type: JwtResponseDto })
-  @ApiResponse({ status: 401, description: 'ID 또는 PW 불일치', type: NormalResponseDto })
+  @ApiResponse({
+    status: 401,
+    description: 'ID 또는 PW 불일치',
+    type: NormalResponseDto,
+  })
   @ApiResponse({ status: 500, description: '서버오류', type: ErrorResponseDto })
   async login(@Body() body: AuthLoginDto, @Res() res: Response) {
     const result = await this.authService.login(body);

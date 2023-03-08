@@ -9,7 +9,7 @@ export class JwtMiddleware implements NestMiddleware {
     try {
       const jwt = req.headers.authorization;
       if (!jwt) {
-        return res.status(401).json({ message: 'JWT가 존재하지 않습니다.' });
+        return res.status(400).json({ message: 'JWT가 존재하지 않습니다.' });
       }
       const decoded = this.JwtService.verify(jwt.toString(), {
         secret: process.env.SECRET,
@@ -22,7 +22,7 @@ export class JwtMiddleware implements NestMiddleware {
     } catch (e) {
       if (e.name === 'TokenExpiredError') {
         console.log(e);
-        return res.status(401).json({ message: 'JWT가 만료되었습니다.' });
+        return res.status(400).json({ message: 'JWT가 만료되었습니다.' });
       }
       console.log(e);
       return res
