@@ -58,6 +58,9 @@ export class AuthController {
 
   @Post('login')
   @ApiOperation({ summary: '로그인' })
+  @ApiResponse({ status: 201, description: '일치', type: JwtResponseDto })
+  @ApiResponse({ status: 401, description: 'ID 또는 PW 불일치', type: NormalResponseDto })
+  @ApiResponse({ status: 500, description: '서버오류', type: ErrorResponseDto })
   async login(@Body() body: AuthLoginDto, @Res() res: Response) {
     const result = await this.authService.login(body);
     switch (result) {
