@@ -94,7 +94,7 @@ export class AuthService {
         return this.Resp;
       }
       const jwt = this.jwtService.sign(
-        { id: body.id },
+        { id: user._id },
         { expiresIn: '30m', secret: process.env.SECRET },
       );
       this.jwtRes.statusCode = 201;
@@ -105,5 +105,12 @@ export class AuthService {
       this.EResp.error = e;
       return this.EResp;
     }
+  }
+  async out(body) {
+    const _id = body._id;
+    const pw = body.pw;
+
+    const user = this.userRepository.findOneBy({ _id });
+    console.log(user);
   }
 }
