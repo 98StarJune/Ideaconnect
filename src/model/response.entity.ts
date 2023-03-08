@@ -9,4 +9,7 @@ export class ResponseEntity {
 
   @ApiProperty({ description: '에러 메세지' })
   error: object;
+
+  @ApiProperty({ description: 'JWT 토큰' })
+  jwt: string;
 }

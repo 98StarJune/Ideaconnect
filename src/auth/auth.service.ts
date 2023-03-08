@@ -9,6 +9,7 @@ import { ErrorResponseDto } from '../model/dto/response/error.response.dto';
 import { AuthCheckDto } from '../model/dto/request/auth/auth.check.dto';
 import { AuthLoginDto } from '../model/dto/request/auth/auth.login.dto';
 import { JwtService } from '@nestjs/jwt';
+import { JwtResponseDto } from '../model/dto/response/jwt.response.dto';
 
 @Injectable()
 export class AuthService {
@@ -18,6 +19,7 @@ export class AuthService {
     private Resp: NormalResponseDto,
     private EResp: ErrorResponseDto,
     private jwtService: JwtService,
+    private jwtRes: JwtResponseDto,
   ) {
     this.userRepository = userRepository;
   }
@@ -77,7 +79,7 @@ export class AuthService {
 
   async login(
     body: AuthLoginDto,
-  ): Promise<NormalResponseDto | ErrorResponseDto> {
+  ): Promise<NormalResponseDto | ErrorResponseDto | JwtResponseDto> {
     try {
       const user = await this.userRepository.findOneBy({ id: body.id });
       if (!user) {
@@ -95,9 +97,9 @@ export class AuthService {
         { id: body.id },
         { expiresIn: '30m', secret: process.env.SECRET },
       );
-      this.Resp.statusCode = 201;
-      this.Resp.message = jwt; //여기는 JWT 전용 Return Dto를 생성하자
-      return this.Resp;
+      this.jwtRes.statusCode = 201;
+      this.jwtRes.jwt = jwt; //여기는 JWT 전용 Return Dto를 생성하자
+      return this.jwtRes;
     } catch (e) {
       this.EResp.statusCode = 401;
       this.EResp.error = e;
