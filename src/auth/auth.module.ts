@@ -8,9 +8,13 @@ import { ErrorResponseDto } from '../model/dto/response/error.response.dto';
 import { JwtService } from '@nestjs/jwt';
 import { JwtMiddleware } from '../jwt/jwt.middleware';
 import { JwtResponseDto } from '../model/dto/response/jwt.response.dto';
+import { IdeaEntity } from '../model/idea.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([UserEntity])],
+  imports: [
+    TypeOrmModule.forFeature([UserEntity]),
+    TypeOrmModule.forFeature([IdeaEntity]),
+  ],
   controllers: [AuthController],
   providers: [
     AuthService,

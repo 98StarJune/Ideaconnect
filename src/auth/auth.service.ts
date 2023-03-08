@@ -10,18 +10,22 @@ import { AuthCheckDto } from '../model/dto/request/auth/auth.check.dto';
 import { AuthLoginDto } from '../model/dto/request/auth/auth.login.dto';
 import { JwtService } from '@nestjs/jwt';
 import { JwtResponseDto } from '../model/dto/response/jwt.response.dto';
+import { IdeaEntity } from '../model/idea.entity';
 
 @Injectable()
 export class AuthService {
   constructor(
     @InjectRepository(UserEntity)
     private userRepository: Repository<UserEntity>,
+    @InjectRepository(IdeaEntity)
+    private ideaRepository: Repository<IdeaEntity>,
     private Resp: NormalResponseDto,
     private EResp: ErrorResponseDto,
     private jwtService: JwtService,
     private jwtRes: JwtResponseDto,
   ) {
     this.userRepository = userRepository;
+    this.ideaRepository = ideaRepository;
   }
 
   async join(body: AuthJoinDto): Promise<NormalResponseDto | ErrorResponseDto> {
@@ -98,7 +102,7 @@ export class AuthService {
         { expiresIn: '30m', secret: process.env.SECRET },
       );
       this.jwtRes.statusCode = 201;
-      this.jwtRes.jwt = jwt; //여기는 JWT 전용 Return Dto를 생성하자
+      this.jwtRes.jwt = jwt;
       return this.jwtRes;
     } catch (e) {
       this.EResp.statusCode = 401;
@@ -107,10 +111,32 @@ export class AuthService {
     }
   }
   async out(body) {
-    const _id = body._id;
+    const _id = body.jwtid;
     const pw = body.pw;
+    try {
+      const user = await this.userRepository.findOneBy({ _id });
+      if (!user) {
+        this.Resp.statusCode = 401;
+        this.Resp.message = '정보가 일치하지 않습니다.';
+        return this.Resp;
+      }
+      const result = await bcrypt.compare(pw, user.pw);
+      if (result === false) {
+        this.Resp.statusCode = 401;
+        this.Resp.message = '정보가 일치하지 않습니다.';
+        return this.Resp;
+      }
+      await this.ideaRepository.delete({ creator: _id });
+      await this.userRepository.delete({ _id: _id });
 
-    const user = this.userRepository.findOneBy({ _id });
-    console.log(user);
+      this.Resp.statusCode = 200;
+      this.Resp.message = '처리되었습니다.';
+      return this.Resp;
+    } catch (e) {
+      console.log(e);
+      this.EResp.statusCode = 500;
+      this.EResp.error = e;
+      return this.EResp;
+    }
   }
 }
