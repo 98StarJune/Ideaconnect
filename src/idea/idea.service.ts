@@ -6,6 +6,7 @@ import { NormalResponseDto } from '../model/dto/response/normal.response.dto';
 import { ErrorResponseDto } from '../model/dto/response/error.response.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { dataIdeaDto } from '../model/dto/response/data.idea.dto';
+import { IdeaOpenoneDto } from '../model/dto/request/idea/idea.openone.dto';
 
 @Injectable()
 export class IdeaService {
@@ -18,6 +19,7 @@ export class IdeaService {
   ) {
     this.ideaRepository = ideaRepository;
   }
+
   async create(body: IdeaCreateDto) {
     body.creator = body.jwtid;
     body.first_date = new Date().toString();
@@ -58,6 +60,32 @@ export class IdeaService {
       return this.dataResp;
     } catch (e) {
       console.log(e);
+      this.EResp.statusCode = 500;
+      this.EResp.error = e;
+      return this.EResp;
+    }
+  }
+
+  async openOne(
+    body: IdeaOpenoneDto,
+  ): Promise<dataIdeaDto | ErrorResponseDto | NormalResponseDto> {
+    try {
+      const content = await this.ideaRepository.findOneBy({ _id: body._id });
+      if (!content) {
+        this.Resp.statusCode = 400;
+        this.Resp.message = '게시글이 존재하지 않습니다.';
+        return this.Resp;
+      }
+      this.dataResp.data = content;
+      if (
+        content.creator !== body.jwtid &&
+        content.connected_user !== body.jwtid
+      ) {
+        content.text = '';
+      }
+      this.dataResp.statusCode = 201;
+      return this.dataResp;
+    } catch (e) {
       this.EResp.statusCode = 500;
       this.EResp.error = e;
       return this.EResp;

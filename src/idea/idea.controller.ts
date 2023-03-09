@@ -11,6 +11,7 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { dataIdeaDto } from '../model/dto/response/data.idea.dto';
+import { IdeaOpenoneDto } from '../model/dto/request/idea/idea.openone.dto';
 
 @ApiTags('아이디어 게시물 정보')
 @Controller('idea')
@@ -20,7 +21,7 @@ export class IdeaController {
     private IdeaService: IdeaService,
     private Resp: NormalResponseDto,
     private EResp: ErrorResponseDto,
-    private IdeaResp: dataIdeaDto,
+    private dataResp: dataIdeaDto,
   ) {}
 
   @Post('create')
@@ -43,6 +44,7 @@ export class IdeaController {
     }
     return res.status(this.Resp.statusCode).json(this.Resp);
   }
+
   @Get('list')
   @ApiOperation({ summary: '게시글 목록을 조회합니다.' })
   @ApiResponse({
@@ -58,10 +60,33 @@ export class IdeaController {
   async list(@Res() res: Response) {
     const result = await this.IdeaService.list();
     switch (result) {
-      case this.IdeaResp:
-        return res.status(this.IdeaResp.statusCode).json(this.IdeaResp);
+      case this.dataResp:
+        return res.status(this.dataResp.statusCode).json(this.dataResp);
       case this.EResp:
         return res.status(this.EResp.statusCode).json(this.EResp.error);
+      default:
+        return res
+          .status(500)
+          .json({ message: '알 수 없는 오류가 발생했습니다.' });
+    }
+  }
+
+  /*  @Post('edit')
+  @ApiOperation({ summary: '아이디어를 수정합니다.' })
+  async edit() {
+      
+  }*/
+  @Post('openOne')
+  @ApiOperation({ summary: '아이디어를 열람합니다.' })
+  async openOne(@Body() body: IdeaOpenoneDto, @Res() res: Response) {
+    const result = await this.IdeaService.openOne(body);
+    switch (result) {
+      case this.dataResp:
+        return res.status(this.dataResp.statusCode).json(this.dataResp);
+      case this.EResp:
+        return res.status(this.EResp.statusCode).json(this.EResp);
+      case this.Resp:
+        return res.status(this.Resp.statusCode).json(this.Resp);
       default:
         return res
           .status(500)
