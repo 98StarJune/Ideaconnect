@@ -1,14 +1,19 @@
 import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
-import { ApiBearerAuth, ApiProperty } from '@nestjs/swagger';
-import { IsString } from 'class-validator';
+import { ApiProperty } from '@nestjs/swagger';
+import { IsNumber, IsString } from 'class-validator';
 
 @Entity()
 export class IdeaEntity {
   jwtid: string;
 
   @PrimaryGeneratedColumn()
-  @ApiProperty({ description: '게시글 고유 번호', deprecated: true })
-  _id: string;
+  @ApiProperty({
+    description: '게시글 고유 번호',
+    deprecated: true,
+    required: true,
+  })
+  @IsNumber()
+  _id: number;
 
   @Column()
   @ApiProperty({ description: '작성자', deprecated: true })
