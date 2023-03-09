@@ -113,4 +113,39 @@ export class IdeaController {
           .json({ message: '알 수 없는 오류가 발생했습니다.' });
     }
   }
+  @Post('delete')
+  @ApiOperation({ summary: '아이디어를 삭제합니다.' })
+  @ApiResponse({
+    status: 200,
+    description: '성공',
+    type: NormalResponseDto,
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'JWT 오류',
+    type: NormalResponseDto,
+  })
+  @ApiResponse({
+    status: 404,
+    description: '정보가 일치하는 게시물이 없음',
+    type: NormalResponseDto,
+  })
+  @ApiResponse({
+    status: 500,
+    description: '서버 오류',
+    type: ErrorResponseDto,
+  })
+  async delete(@Body() body: IdeaOpenoneDto, @Res() res: Response) {
+    const result = await this.IdeaService.delete(body);
+    switch (result) {
+      case this.EResp:
+        return res.status(this.EResp.statusCode).json(this.EResp);
+      case this.Resp:
+        return res.status(this.Resp.statusCode).json(this.Resp);
+      default:
+        return res
+          .status(500)
+          .json({ message: '알 수 없는 오류가 발생했습니다.' });
+    }
+  }
 }

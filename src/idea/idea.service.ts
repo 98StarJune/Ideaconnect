@@ -91,4 +91,29 @@ export class IdeaService {
       return this.EResp;
     }
   }
+
+  async delete(
+    body: IdeaOpenoneDto,
+  ): Promise<NormalResponseDto | ErrorResponseDto> {
+    try {
+      const find = await this.ideaRepository.findOneBy({
+        _id: body._id,
+        creator: body.jwtid,
+      });
+      if (!find) {
+        this.Resp.statusCode = 404;
+        this.Resp.message = '일치하는 게시물이 없습니다.';
+        return this.Resp;
+      }
+      await this.ideaRepository.delete({ _id: body._id });
+      this.Resp.statusCode = 200;
+      this.Resp.message = '정상적으로 삭제되었습니다.';
+      return this.Resp;
+    } catch (e) {
+      console.log(e);
+      this.EResp.error = e;
+      this.EResp.statusCode = 500;
+      return this.EResp;
+    }
+  }
 }
