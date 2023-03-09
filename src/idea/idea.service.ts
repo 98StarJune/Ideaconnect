@@ -72,7 +72,7 @@ export class IdeaService {
     try {
       const content = await this.ideaRepository.findOneBy({ _id: body._id });
       if (!content) {
-        this.Resp.statusCode = 400;
+        this.Resp.statusCode = 404;
         this.Resp.message = '게시글이 존재하지 않습니다.';
         return this.Resp;
       }

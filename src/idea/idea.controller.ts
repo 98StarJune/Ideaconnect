@@ -53,7 +53,7 @@ export class IdeaController {
     type: dataIdeaDto,
   })
   @ApiResponse({
-    status: 401,
+    status: 400,
     description: 'JWT 오류',
     type: ErrorResponseDto,
   })
@@ -78,6 +78,26 @@ export class IdeaController {
   }*/
   @Post('openOne')
   @ApiOperation({ summary: '아이디어를 열람합니다.' })
+  @ApiResponse({
+    status: 201,
+    description: '성공 (권한이 없을 경우 본문은 비어있을 수 있습니다',
+    type: dataIdeaDto,
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'JWT 오류',
+    type: ErrorResponseDto,
+  })
+  @ApiResponse({
+    status: 404,
+    description: '게시글이 존재하지 않음',
+    type: NormalResponseDto,
+  })
+  @ApiResponse({
+    status: 500,
+    description: '서버 에러',
+    type: ErrorResponseDto,
+  })
   async openOne(@Body() body: IdeaOpenoneDto, @Res() res: Response) {
     const result = await this.IdeaService.openOne(body);
     switch (result) {

@@ -9,7 +9,6 @@ export class IdeaEntity {
   @PrimaryGeneratedColumn()
   @ApiProperty({
     description: '게시글 고유 번호',
-    deprecated: true,
     required: true,
   })
   @IsNumber()
