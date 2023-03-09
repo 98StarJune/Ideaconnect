@@ -80,7 +80,7 @@ export class IdeaController {
   @ApiOperation({ summary: '아이디어를 열람합니다.' })
   @ApiResponse({
     status: 201,
-    description: '성공 (권한이 없을 경우 본문은 비어있을 수 있습니다',
+    description: '성공 (권한이 없을 경우 본문은 비어있을 수 있습니다)',
     type: dataIdeaDto,
   })
   @ApiResponse({
