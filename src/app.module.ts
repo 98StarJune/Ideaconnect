@@ -1,4 +1,4 @@
-import { MiddlewareConsumer, Module } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
@@ -9,6 +9,7 @@ import { UserEntity } from './model/User.entity';
 import { IdeaModule } from './idea/idea.module';
 import { IdeaEntity } from './model/idea.entity';
 import { JwtService } from '@nestjs/jwt';
+import { SocketGateway } from './socket/socket.gateway';
 
 @Module({
   imports: [
@@ -27,7 +28,7 @@ import { JwtService } from '@nestjs/jwt';
     IdeaModule,
   ],
   controllers: [AppController],
-  providers: [AppService, JwtService],
+  providers: [AppService, JwtService, SocketGateway],
   exports: [ConfigModule],
 })
 export class AppModule {}
