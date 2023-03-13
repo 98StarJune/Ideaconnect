@@ -12,7 +12,7 @@ async function bootstrap() {
     .setDescription(
       '2023 Google Solution Challenge Project : Created by 배성준',
     )
-    .setVersion('0.1.2')
+    .setVersion('0.1.4')
     .addBearerAuth()
     .build();
   app.useGlobalPipes(
