@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, Res } from '@nestjs/common';
+import { Body, Controller, Get, Post, Res, UseGuards } from '@nestjs/common';
 import { IdeaService } from './idea.service';
 import { IdeaCreateDto } from '../model/dto/request/idea/idea.create.dto';
 import { Response } from 'express';
@@ -12,8 +12,10 @@ import {
 } from '@nestjs/swagger';
 import { dataIdeaDto } from '../model/dto/response/data.idea.dto';
 import { IdeaOpenoneDto } from '../model/dto/request/idea/idea.openone.dto';
+import { JwtauthGuard } from '../jwtauth/jwtauth.guard';
 
 @ApiTags('아이디어 게시물 정보')
+@UseGuards(JwtauthGuard)
 @Controller('idea')
 @ApiSecurity('JWT')
 export class IdeaController {

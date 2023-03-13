@@ -1,4 +1,4 @@
-import { Body, Controller, Post, Res } from '@nestjs/common';
+import { Body, Controller, Post, Res, UseGuards } from '@nestjs/common';
 import { AuthJoinDto } from '../model/dto/request/auth/auth.join.dto';
 import {
   ApiOperation,
@@ -13,6 +13,7 @@ import { ErrorResponseDto } from '../model/dto/response/error.response.dto';
 import { AuthCheckDto } from '../model/dto/request/auth/auth.check.dto';
 import { AuthLoginDto } from '../model/dto/request/auth/auth.login.dto';
 import { JwtResponseDto } from '../model/dto/response/jwt.response.dto';
+import { JwtauthGuard } from '../jwtauth/jwtauth.guard';
 
 @ApiTags('회원 정보')
 @Controller('auth')
@@ -39,6 +40,7 @@ export class AuthController {
   }
 
   @Post('check')
+  @UseGuards(JwtauthGuard)
   @ApiOperation({ summary: 'ID 및 Pw의 일치 여부를 확인합니다' })
   @ApiResponse({ status: 201, description: '일치', type: NormalResponseDto })
   @ApiResponse({
@@ -87,6 +89,7 @@ export class AuthController {
   }
 
   @Post('out')
+  @UseGuards(JwtauthGuard)
   @ApiSecurity('JWT')
   @ApiOperation({ summary: '탈퇴 처리합니다.' })
   @ApiResponse({ status: 201, description: '성공', type: NormalResponseDto })

@@ -6,7 +6,6 @@ import { UserEntity } from '../model/User.entity';
 import { NormalResponseDto } from '../model/dto/response/normal.response.dto';
 import { ErrorResponseDto } from '../model/dto/response/error.response.dto';
 import { JwtService } from '@nestjs/jwt';
-import { JwtMiddleware } from '../jwt/jwt.middleware';
 import { JwtResponseDto } from '../model/dto/response/jwt.response.dto';
 import { IdeaEntity } from '../model/idea.entity';
 
@@ -22,7 +21,6 @@ import { IdeaEntity } from '../model/idea.entity';
     ErrorResponseDto,
     JwtResponseDto,
     JwtService,
-    JwtMiddleware,
   ],
 })
 export class AuthModule {}

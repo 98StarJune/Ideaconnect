@@ -8,7 +8,6 @@ import * as process from 'process';
 import { UserEntity } from './model/User.entity';
 import { IdeaModule } from './idea/idea.module';
 import { IdeaEntity } from './model/idea.entity';
-import { JwtMiddleware } from './jwt/jwt.middleware';
 import { JwtService } from '@nestjs/jwt';
 
 @Module({
@@ -28,15 +27,7 @@ import { JwtService } from '@nestjs/jwt';
     IdeaModule,
   ],
   controllers: [AppController],
-  providers: [AppService, JwtMiddleware, JwtService],
+  providers: [AppService, JwtService],
   exports: [ConfigModule],
 })
-export class AppModule {
-  configure(consumer: MiddlewareConsumer) {
-    consumer
-      .apply(JwtMiddleware)
-      .exclude('auth/login', 'auth/join')
-      .forRoutes('auth', 'idea')
-      .apply();
-  }
-}
+export class AppModule {}
