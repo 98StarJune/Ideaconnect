@@ -1,6 +1,5 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
-import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -8,8 +7,9 @@ import * as process from 'process';
 import { UserEntity } from './model/User.entity';
 import { IdeaModule } from './idea/idea.module';
 import { IdeaEntity } from './model/idea.entity';
-import { JwtService } from '@nestjs/jwt';
-import { SocketGateway } from './socket/socket.gateway';
+import { RoomEntity } from './model/room.entity';
+import { MessageEntity } from './model/message.entity';
+import { SocketModule } from './socket/socket.module';
 
 @Module({
   imports: [
@@ -21,14 +21,14 @@ import { SocketGateway } from './socket/socket.gateway';
       username: process.env.DB_USERNAME,
       password: process.env.DB_PASSWORD,
       database: 'idea',
-      entities: [UserEntity, IdeaEntity],
+      entities: [UserEntity, IdeaEntity, RoomEntity, MessageEntity],
       synchronize: true,
     }),
     AuthModule,
     IdeaModule,
+    SocketModule,
   ],
   controllers: [AppController],
-  providers: [AppService, JwtService, SocketGateway],
   exports: [ConfigModule],
 })
 export class AppModule {}
