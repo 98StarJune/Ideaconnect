@@ -8,11 +8,14 @@ import { ErrorResponseDto } from '../model/dto/response/error.response.dto';
 import { JwtService } from '@nestjs/jwt';
 import { JwtResponseDto } from '../model/dto/response/jwt.response.dto';
 import { IdeaEntity } from '../model/idea.entity';
+import { HttpModule } from '@nestjs/axios';
+import { GauthJoinResponseDto } from '../model/dto/response/gauth.join.response.dto';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([UserEntity]),
     TypeOrmModule.forFeature([IdeaEntity]),
+    HttpModule,
   ],
   controllers: [AuthController],
   providers: [
@@ -21,6 +24,7 @@ import { IdeaEntity } from '../model/idea.entity';
     ErrorResponseDto,
     JwtResponseDto,
     JwtService,
+    GauthJoinResponseDto,
   ],
 })
 export class AuthModule {}

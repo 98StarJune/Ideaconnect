@@ -12,6 +12,13 @@ export class UserEntity {
   })
   _id: string;
 
+  @Column()
+  @ApiProperty({
+    description: '구글에서 제공하는 코드',
+    deprecated: true,
+  })
+  gid: number;
+
   @ApiProperty({
     description: '일반 사용자일 경우 True',
     required: true,

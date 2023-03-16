@@ -11,6 +11,10 @@ import { AuthLoginDto } from '../model/dto/request/auth/auth.login.dto';
 import { JwtService } from '@nestjs/jwt';
 import { JwtResponseDto } from '../model/dto/response/jwt.response.dto';
 import { IdeaEntity } from '../model/idea.entity';
+import { HttpService } from '@nestjs/axios';
+import { AuthGauthDto } from '../model/dto/request/auth/auth.gauth.dto';
+import { GauthJoinResponseDto } from '../model/dto/response/gauth.join.response.dto';
+import { AuthGjoinDto } from '../model/dto/request/auth/auth.gjoin.dto';
 
 @Injectable()
 export class AuthService {
@@ -19,10 +23,12 @@ export class AuthService {
     private userRepository: Repository<UserEntity>,
     @InjectRepository(IdeaEntity)
     private ideaRepository: Repository<IdeaEntity>,
+    private httpService: HttpService,
+    private jwtService: JwtService,
     private Resp: NormalResponseDto,
     private EResp: ErrorResponseDto,
-    private jwtService: JwtService,
     private jwtRes: JwtResponseDto,
+    private gjoinRes: GauthJoinResponseDto,
   ) {
     this.userRepository = userRepository;
     this.ideaRepository = ideaRepository;
@@ -110,6 +116,7 @@ export class AuthService {
       return this.EResp;
     }
   }
+
   async out(body) {
     const _id = body.jwtid;
     const pw = body.pw;
@@ -134,6 +141,106 @@ export class AuthService {
       return this.Resp;
     } catch (e) {
       console.log(e);
+      this.EResp.statusCode = 500;
+      this.EResp.error = e;
+      return this.EResp;
+    }
+  }
+  async gauth(
+    body: AuthGauthDto,
+  ): Promise<ErrorResponseDto | GauthJoinResponseDto | JwtResponseDto> {
+    try {
+      const access = await this.httpService.axiosRef.post(
+        'https://oauth2.googleapis.com/token',
+        {
+          code: decodeURI(body.code),
+          client_id: process.env.CLIENTID,
+          client_secret: process.env.CLIENTSECRET,
+          grant_type: 'authorization_code',
+          redirect_uri: 'http://localhost:3000',
+        },
+        {
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+          },
+        },
+      );
+      let url = 'https://www.googleapis.com/oauth2/v1/userinfo?access_token=';
+      url += `${access.data.access_token}`;
+      const { data } = await this.httpService.axiosRef.get(url, {
+        headers: {
+          Authorization: `Bearer ${access.data.access_token}`,
+          Accept: 'application/json',
+        },
+      });
+      const user = await this.userRepository.findOneBy({ gid: data.id });
+      if (user) {
+        if (user.common === null) {
+          this.gjoinRes.statusCode = 404;
+          this.gjoinRes.message = '회원가입을 진행해주세요.';
+          this.gjoinRes._id = user._id;
+          return this.gjoinRes;
+        }
+        this.jwtRes.statusCode = 201;
+      } else {
+        const guser = {
+          common: null,
+          gid: data.id,
+          _id: null,
+          name: data.name,
+          id: null,
+          pw: null,
+          nation: null,
+          email: data.email,
+          phone: null,
+          nick: null,
+        };
+        while (1) {
+          guser._id = Math.random().toString(36).slice(2);
+          const _idtest = await this.userRepository.findOneBy({
+            _id: guser._id,
+          });
+          if (!_idtest) {
+            break;
+          }
+        }
+        await this.userRepository.save(guser);
+        user._id = guser._id;
+        this.gjoinRes.statusCode = 404;
+        this.gjoinRes.message = '회원가입을 진행해주세요.';
+        this.gjoinRes._id = user._id;
+        return this.gjoinRes;
+      }
+      const jwt = this.jwtService.sign(
+        { id: user._id },
+        { expiresIn: '30m', secret: process.env.SECRET },
+      );
+      this.jwtRes.jwt = jwt;
+      return this.jwtRes;
+    } catch (e) {
+      console.log(e);
+      this.EResp.statusCode = 500;
+      this.EResp.error = e;
+      return this.EResp;
+    }
+  }
+  async gjoin(
+    body: AuthGjoinDto,
+  ): Promise<NormalResponseDto | ErrorResponseDto> {
+    try {
+      const user = await this.userRepository.findOneBy({ _id: body._id });
+      if (!user) {
+        this.EResp.statusCode = 404;
+        this.EResp.message = '존재하지 않는 사용자입니다.';
+        return this.EResp;
+      }
+      body.pw = await bcrypt.hash(body.pw, 12);
+      const result = await this.userRepository.save(body);
+      console.log(result); //테스트 코드입니다. 정상적으로 저장되는지 확인하십시오.
+      this.Resp.statusCode = 200;
+      this.Resp.message = '정상적으로 등록되었습니다.';
+      return this.Resp;
+    } catch (e) {
       this.EResp.statusCode = 500;
       this.EResp.error = e;
       return this.EResp;
