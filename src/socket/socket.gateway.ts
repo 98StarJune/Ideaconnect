@@ -5,32 +5,59 @@ import {
   WebSocketGateway,
   WebSocketServer,
 } from '@nestjs/websockets';
-import { Server } from 'socket.io';
+import { Server, Socket } from 'socket.io';
 import { UseGuards } from '@nestjs/common';
 import { JwtauthGuard } from '../jwtauth/jwtauth.guard';
 import { SocketConnectDto } from '../model/dto/request/socket/socket.connect.dto';
 import { SocketService } from './socket.service';
+import { SocketDisconnectDto } from '../model/dto/request/socket/socket.disconnect.dto';
 
 @WebSocketGateway(8088, { cors: '*/*' })
 @UseGuards(JwtauthGuard)
 export class SocketGateway {
   constructor(private SocketService: SocketService) {}
+
   @WebSocketServer()
   server: Server;
 
   @SubscribeMessage('message')
-  handleMessage(@ConnectedSocket() client, @MessageBody() body): void {
-    /*
-    body.message = '[백엔드에서 보낸 메세지]' + body.message;
-    body.name = '홍길동';
-    console.log('body.message : ');
-    console.log(body);
-    console.log('client ID' + header.id);*/
+  handleMessage(
+    @ConnectedSocket() client: Socket,
+    @MessageBody() body: SocketConnectDto,
+  ): void {
     this.server.emit('a', body);
-    //this.server.to().emit('test', 'test')
   }
+
   @SubscribeMessage('join')
-  join(@ConnectedSocket() client, @MessageBody() body: SocketConnectDto): void {
-    this.SocketService.connect(body);
+  async join(
+    @ConnectedSocket() client: Socket,
+    @MessageBody() body: SocketConnectDto,
+  ): Promise<void> {
+    const result = await this.SocketService.connect(client.id, body);
+    if (typeof result === 'string') {
+      this.server.socketsJoin(result);
+    } else {
+      this.server.emit('error', result, '에러가 발생했습니다.');
+    }
+  }
+
+  @SubscribeMessage('out')
+  async disconnect(
+    @ConnectedSocket() client: Socket,
+    @MessageBody() body: SocketDisconnectDto,
+  ): Promise<void> {
+    const result = await this.SocketService.disconnect(client.id, body);
+    if (typeof result === 'string') {
+      this.server.socketsLeave(result);
+    } else {
+      this.server.emit('error', result, '에러가 발생했습니다.');
+    }
+  }
+  @SubscribeMessage('send')
+  async send(
+    @ConnectedSocket() client: Socket,
+    @MessageBody() body,
+  ): Promise<void> {
+    const result = await this.SocketService.send(client.id, body);
   }
 }

@@ -6,11 +6,8 @@ export class RoomEntity {
   roomname: string;
 
   @Column()
-  date: string;
+  commonid: number;
 
   @Column()
-  sender: string;
-
-  @Column()
-  message: string;
+  commonfalseid: string;
 }
