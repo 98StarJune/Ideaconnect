@@ -59,5 +59,10 @@ export class SocketGateway {
     @MessageBody() body,
   ): Promise<void> {
     const result = await this.SocketService.send(client.id, body);
+    if (typeof result === 'boolean') {
+      this.server.emit('error', '에러가 발생했습니다.');
+    } else {
+      this.server.to(result.roomname).emit('message', result);
+    }
   }
 }

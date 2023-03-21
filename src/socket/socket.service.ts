@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, LiteralObject } from '@nestjs/common';
 import { SocketConnectDto } from '../model/dto/request/socket/socket.connect.dto';
 import { Repository } from 'typeorm';
 import { MessageEntity } from '../model/message.entity';
@@ -23,7 +23,7 @@ export class SocketService {
 
   async connect(id: string, body: SocketConnectDto): Promise<string | object> {
     try {
-      const roomname = body._id + '_' + id;
+      const roomname = body.idea_id + '_' + id;
       const user = await this.UserEntity.findOneBy({ id: body.jwtid });
       let room: RoomEntity;
       /**일반 사용자 일 경우*/
@@ -35,7 +35,7 @@ export class SocketService {
           commonfalseid: body.jwtid,
         });
       }
-      const idea = await this.IdeaEntity.findOneBy({ _id: body._id });
+      const idea = await this.IdeaEntity.findOneBy({ _id: body.idea_id });
       if (!room) {
         const Room = {
           roomname,
@@ -57,8 +57,9 @@ export class SocketService {
     body: SocketDisconnectDto,
   ): Promise<string | boolean | object> {
     try {
+      const roomname = body.idea_id + '_' + id;
       const result = await this.RoomEntity.findOneBy({
-        roomname: body.roomname,
+        roomname,
         commonfalseid: body.jwtid,
       });
       if (!result) {
@@ -70,7 +71,28 @@ export class SocketService {
     }
   }
 
-  async send(id: string, body): Promise<string> {
-    return '개발 중입니다';
+  async send(id: string, body): Promise<LiteralObject | boolean> {
+    const roomname = body.idea_id + '_' + id;
+    const roominfo = await this.RoomEntity.findOneBy({
+      roomname: roomname,
+      commonfalseid: body.jwtid,
+    });
+    if (!roominfo) {
+      return false;
+    }
+    const room = await this.MessageEntity.findOneBy({
+      roomname: roominfo.roomname,
+    });
+    if (!room) {
+      return false;
+    }
+    const message = {
+      roomname: roominfo.roomname,
+      date: new Date().toString(),
+      sender: body.jwtid,
+      message: body.message,
+    };
+    await this.MessageEntity.save(message);
+    return message;
   }
 }
