@@ -20,14 +20,6 @@ export class SocketGateway {
   @WebSocketServer()
   server: Server;
 
-  @SubscribeMessage('message')
-  handleMessage(
-    @ConnectedSocket() client: Socket,
-    @MessageBody() body: SocketConnectDto,
-  ): void {
-    this.server.emit('a', body);
-  }
-
   @SubscribeMessage('join')
   async join(
     @ConnectedSocket() client: Socket,
