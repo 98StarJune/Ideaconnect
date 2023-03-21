@@ -1,4 +1,4 @@
-import { Injectable, LiteralObject } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { SocketConnectDto } from '../model/dto/request/socket/socket.connect.dto';
 import { Repository } from 'typeorm';
 import { MessageEntity } from '../model/message.entity';
@@ -7,6 +7,7 @@ import { RoomEntity } from '../model/room.entity';
 import { UserEntity } from '../model/User.entity';
 import { IdeaEntity } from '../model/idea.entity';
 import { SocketDisconnectDto } from '../model/dto/request/socket/socket.disconnect.dto';
+import { MessageInterface } from '../model/dto/request/socket/message.interface';
 
 @Injectable()
 export class SocketService {
@@ -70,23 +71,16 @@ export class SocketService {
       return e;
     }
   }
-
-  async send(id: string, body): Promise<LiteralObject | boolean> {
+  async send(id: string, body): Promise<MessageInterface> {
     const roomname = body.idea_id + '_' + id;
     const roominfo = await this.RoomEntity.findOneBy({
       roomname: roomname,
       commonfalseid: body.jwtid,
     });
     if (!roominfo) {
-      return false;
+      throw new Error('일치하는 room 정보가 없습니다');
     }
-    const room = await this.MessageEntity.findOneBy({
-      roomname: roominfo.roomname,
-    });
-    if (!room) {
-      return false;
-    }
-    const message = {
+    const message: MessageInterface = {
       roomname: roominfo.roomname,
       date: new Date().toString(),
       sender: body.jwtid,
