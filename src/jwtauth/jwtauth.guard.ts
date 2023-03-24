@@ -41,7 +41,17 @@ export class JwtauthGuard implements CanActivate {
             return true;
           }
           throw Error('알 수 없는 오류 발생');
-        } catch (e) {}
+        } catch (e) {
+          console.log(e);
+          if (e.name === 'TokenExpiredError') {
+            res.status(400).json({
+              statusCode: 400,
+              message: '토큰이 만료되었습니다.',
+            });
+            break;
+          }
+        }
+        break;
 
       case true:
         const client = context.switchToWs().getClient();
@@ -69,9 +79,13 @@ export class JwtauthGuard implements CanActivate {
               statusCode: 400,
               message: '토큰이 만료되었습니다.',
             });
+            break;
           }
           client.emit('error', '에러가 발생했습니다.');
         }
+        break;
+      default:
+        break;
     }
   }
 }
