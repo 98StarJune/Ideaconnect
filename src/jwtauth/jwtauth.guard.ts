@@ -47,11 +47,11 @@ export class JwtauthGuard implements CanActivate {
         const client = context.switchToWs().getClient();
         const body = context.switchToWs().getData();
         try {
-          token = req.handshake.headers.authorization;
-          if (!token) {
+          token = req.handshake.query.jwt;
+          if (token === undefined) {
             client.emit('jwt', {
               statusCode: 400,
-              message: '토큰이 존재하지 않습니다.',
+              message: 'd.',
             });
             return false;
           }
@@ -64,10 +64,13 @@ export class JwtauthGuard implements CanActivate {
           }
           throw Error('알 수 없는 오류 발생');
         } catch (e) {
-          client.emit('jwt', {
-            statusCode: 400,
-            message: '토큰이 존재하지 않습니다.',
-          });
+          if (e.name === 'TokenExpiredError') {
+            client.emit('jwt', {
+              statusCode: 400,
+              message: '토큰이 만료되었습니다.',
+            });
+          }
+          client.emit('error', '에러가 발생했습니다.');
         }
     }
   }
