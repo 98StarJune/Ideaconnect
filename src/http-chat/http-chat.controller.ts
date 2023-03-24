@@ -15,7 +15,7 @@ export class HttpChatController {
     private ERes: ErrorResponseDto,
   ) {}
 
-  @Post('room')
+  @Post('create')
   async create(@Body() body: HttpchatCreateDto, @Res() res: Response) {
     const result = await this.httpchatService.create(body);
     if (result === this.ERes) {
