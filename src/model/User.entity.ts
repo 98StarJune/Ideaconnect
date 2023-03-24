@@ -12,7 +12,7 @@ export class UserEntity {
   })
   _id: string;
 
-  @Column()
+  @Column({ default: null })
   @ApiProperty({
     description: '구글에서 제공하는 코드',
     deprecated: true,

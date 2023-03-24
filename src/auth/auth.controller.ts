@@ -80,9 +80,9 @@ export class AuthController {
     const result = await this.authService.login(body);
     switch (result) {
       case this.Resp:
-        return res.status(this.EResp.statusCode).json(this.EResp);
-      case this.EResp:
         return res.status(this.Resp.statusCode).json(this.Resp);
+      case this.EResp:
+        return res.status(this.EResp.statusCode).json(this.EResp);
       case this.jwtRes:
         return res.status(this.jwtRes.statusCode).json(this.jwtRes);
       default:
