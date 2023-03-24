@@ -10,6 +10,7 @@ import { IdeaEntity } from './model/idea.entity';
 import { RoomEntity } from './model/room.entity';
 import { MessageEntity } from './model/message.entity';
 import { SocketModule } from './socket/socket.module';
+import { HttpChatModule } from './http-chat/http-chat.module';
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import { SocketModule } from './socket/socket.module';
     AuthModule,
     IdeaModule,
     SocketModule,
+    HttpChatModule,
   ],
   controllers: [AppController],
   exports: [ConfigModule],
