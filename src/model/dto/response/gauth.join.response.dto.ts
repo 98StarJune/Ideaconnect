@@ -6,4 +6,6 @@ export class GauthJoinResponseDto extends PickType(ResponseEntity, [
   'message',
 ]) {
   _id: string;
+  name: string;
+  email: string;
 }
