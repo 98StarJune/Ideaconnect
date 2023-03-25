@@ -6,7 +6,7 @@ export class RoomEntity {
   roomname: string;
 
   @Column()
-  commonid: number;
+  commonid: string;
 
   @Column()
   commonfalseid: string;
