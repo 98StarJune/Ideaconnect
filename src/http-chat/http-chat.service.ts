@@ -97,4 +97,30 @@ export class HttpChatService {
     this.DRes.nickname = user.nickname;
     return this.DRes;
   }
+  async list(jwt): Promise<ErrorResponseDto | DataResponseDto> {
+    //고유 번호 기반 요청자 정보 조회
+    const user = await this.UserEntity.findOneBy({ _id: jwt });
+    //User 정보가 조회되지 않았을 경우 (null)
+    if (!user) {
+      this.ERes.statusCode = 401;
+      this.ERes.message = '존재하지 않는 사용자입니다.';
+      return this.ERes;
+    }
+    let rooms;
+    if (user.common === true) {
+      //아이디어 등록자일 경우
+      rooms = await this.RoomEntity.findBy({ common_id: jwt });
+    } else {
+      //자본가 일 경우
+      rooms = await this.RoomEntity.findBy({ commonfalse_id: jwt });
+    }
+    if (!rooms[0]) {
+      //룸 정보가 없을 경우
+      this.ERes.statusCode = 404;
+      return this.ERes;
+    }
+    this.DRes.statusCode = 200;
+    this.DRes.data = rooms;
+    return this.DRes;
+  }
 }
