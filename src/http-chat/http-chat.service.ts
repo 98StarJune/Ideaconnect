@@ -22,7 +22,9 @@ export class HttpChatService {
     private ERes: ErrorResponseDto,
     private Res: HttpchatResponseDto,
   ) {}
-  async create(body: HttpchatCreateDto) {
+  async create(
+    body: HttpchatCreateDto,
+  ): Promise<ErrorResponseDto | HttpchatResponseDto> {
     const roomname = body.id + '_' + body.jwtid;
     const user = await this.UserEntity.findOneBy({ _id: body.jwtid });
     if (!user) {
