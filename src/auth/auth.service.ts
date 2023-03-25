@@ -175,25 +175,28 @@ export class AuthService {
       });
       const user = await this.userRepository.findOneBy({ gid: data.id });
       if (user) {
+        /**가입 안됐는데 다시 시도한 경우*/
         if (user.common === null) {
           this.gjoinRes.statusCode = 404;
           this.gjoinRes.message = '회원가입을 진행해주세요.';
           this.gjoinRes._id = user._id;
+          this.gjoinRes.name = user.name;
+          this.gjoinRes.email = user.email;
           return this.gjoinRes;
         }
-        this.jwtRes.statusCode = 201;
       } else {
+        /**최초 로그인 시 임시가입 처리*/
         const guser = {
           common: null,
           gid: data.id,
-          _id: null,
+          _id: '',
           name: data.name,
           id: null,
           pw: null,
           nation: null,
           email: data.email,
           phone: null,
-          nick: null,
+          nickname: null,
         };
         while (1) {
           guser._id = Math.random().toString(36).slice(2);
@@ -205,16 +208,18 @@ export class AuthService {
           }
         }
         await this.userRepository.save(guser);
-        user._id = guser._id;
         this.gjoinRes.statusCode = 404;
         this.gjoinRes.message = '회원가입을 진행해주세요.';
-        this.gjoinRes._id = user._id;
+        this.gjoinRes._id = guser._id;
+        this.gjoinRes.name = guser.name;
+        this.gjoinRes.email = guser.email;
         return this.gjoinRes;
       }
       const jwt = this.jwtService.sign(
         { id: user._id },
         { expiresIn: '30m', secret: process.env.SECRET },
       );
+      this.jwtRes.statusCode = 201;
       this.jwtRes.jwt = jwt;
       return this.jwtRes;
     } catch (e) {
@@ -235,8 +240,7 @@ export class AuthService {
         return this.EResp;
       }
       body.pw = await bcrypt.hash(body.pw, 12);
-      const result = await this.userRepository.save(body);
-      console.log(result); //테스트 코드입니다. 정상적으로 저장되는지 확인하십시오.
+      await this.userRepository.save(body);
       this.Resp.statusCode = 200;
       this.Resp.message = '정상적으로 등록되었습니다.';
       return this.Resp;
