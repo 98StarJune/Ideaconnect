@@ -10,7 +10,7 @@ import {
   ApiSecurity,
   ApiTags,
 } from '@nestjs/swagger';
-import { dataIdeaDto } from '../model/dto/response/data.idea.dto';
+import { DataResponseDto } from '../model/dto/response/data.response.dto';
 import { IdeaOpenoneDto } from '../model/dto/request/idea/idea.openone.dto';
 import { JwtauthGuard } from '../jwtauth/jwtauth.guard';
 
@@ -23,7 +23,7 @@ export class IdeaController {
     private IdeaService: IdeaService,
     private Resp: NormalResponseDto,
     private EResp: ErrorResponseDto,
-    private dataResp: dataIdeaDto,
+    private dataResp: DataResponseDto,
   ) {}
 
   @Post('create')
@@ -52,7 +52,7 @@ export class IdeaController {
   @ApiResponse({
     status: 201,
     description: '조회 완료',
-    type: dataIdeaDto,
+    type: DataResponseDto,
   })
   @ApiResponse({
     status: 400,
@@ -83,7 +83,7 @@ export class IdeaController {
   @ApiResponse({
     status: 201,
     description: '성공 (권한이 없을 경우 본문은 비어있을 수 있습니다)',
-    type: dataIdeaDto,
+    type: DataResponseDto,
   })
   @ApiResponse({
     status: 401,

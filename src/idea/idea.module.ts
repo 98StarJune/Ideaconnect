@@ -6,7 +6,7 @@ import { IdeaEntity } from '../model/idea.entity';
 import { NormalResponseDto } from '../model/dto/response/normal.response.dto';
 import { ErrorResponseDto } from '../model/dto/response/error.response.dto';
 import { JwtService } from '@nestjs/jwt';
-import { dataIdeaDto } from '../model/dto/response/data.idea.dto';
+import { DataResponseDto } from '../model/dto/response/data.response.dto';
 
 @Module({
   imports: [TypeOrmModule.forFeature([IdeaEntity])],
@@ -15,7 +15,7 @@ import { dataIdeaDto } from '../model/dto/response/data.idea.dto';
     IdeaService,
     NormalResponseDto,
     ErrorResponseDto,
-    dataIdeaDto,
+    DataResponseDto,
     JwtService,
   ],
 })

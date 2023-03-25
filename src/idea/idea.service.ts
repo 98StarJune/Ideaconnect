@@ -5,7 +5,7 @@ import { IdeaEntity } from '../model/idea.entity';
 import { NormalResponseDto } from '../model/dto/response/normal.response.dto';
 import { ErrorResponseDto } from '../model/dto/response/error.response.dto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { dataIdeaDto } from '../model/dto/response/data.idea.dto';
+import { DataResponseDto } from '../model/dto/response/data.response.dto';
 import { IdeaOpenoneDto } from '../model/dto/request/idea/idea.openone.dto';
 
 @Injectable()
@@ -14,7 +14,7 @@ export class IdeaService {
     @InjectRepository(IdeaEntity)
     private ideaRepository: Repository<IdeaEntity>,
     private Resp: NormalResponseDto,
-    private dataResp: dataIdeaDto,
+    private dataResp: DataResponseDto,
     private EResp: ErrorResponseDto,
   ) {
     this.ideaRepository = ideaRepository;
@@ -38,7 +38,7 @@ export class IdeaService {
     }
   }
 
-  async list(): Promise<dataIdeaDto | ErrorResponseDto> {
+  async list(): Promise<DataResponseDto | ErrorResponseDto> {
     try {
       const result = await this.ideaRepository.find({
         take: 10,
@@ -68,7 +68,7 @@ export class IdeaService {
 
   async openOne(
     body: IdeaOpenoneDto,
-  ): Promise<dataIdeaDto | ErrorResponseDto | NormalResponseDto> {
+  ): Promise<DataResponseDto | ErrorResponseDto | NormalResponseDto> {
     try {
       const content = await this.ideaRepository.findOneBy({ _id: body._id });
       if (!content) {
