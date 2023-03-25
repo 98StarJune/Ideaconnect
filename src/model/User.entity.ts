@@ -17,25 +17,25 @@ export class UserEntity {
     description: '구글에서 제공하는 코드',
     deprecated: true,
   })
-  gid: number;
+  gid: string;
 
   @ApiProperty({
     description: '일반 사용자일 경우 True',
     required: true,
     example: 'true',
   })
-  @Column()
+  @Column({ nullable: true })
   @IsBoolean()
   common: boolean;
 
   @ApiProperty({ description: '아이디', required: true, example: 'testID' })
-  @Column()
+  @Column({ nullable: true })
   @Index({ unique: true })
   @IsString()
   id: string;
 
   @ApiProperty({ description: '비밀번호', required: true, example: 'testPW' })
-  @Column()
+  @Column({ nullable: true })
   @IsString()
   pw: string;
 
@@ -53,7 +53,7 @@ export class UserEntity {
     required: true,
     example: '대한민국',
   })
-  @Column()
+  @Column({ nullable: true })
   @IsString()
   nation: string;
 
@@ -71,7 +71,7 @@ export class UserEntity {
     required: true,
     example: '01012345678',
   })
-  @Column()
+  @Column({ nullable: true })
   @IsNumber()
   phone: number;
 
@@ -80,7 +80,7 @@ export class UserEntity {
     required: true,
     example: 'testNickname',
   })
-  @Column()
+  @Column({ nullable: true })
   @IsString()
   nickname: string;
 
