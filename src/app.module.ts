@@ -27,7 +27,7 @@ import { HttpChatModule } from './http-chat/http-chat.module';
     }),
     AuthModule,
     IdeaModule,
-    SocketModule,
+    //SocketModule,
     HttpChatModule,
   ],
   controllers: [AppController],
