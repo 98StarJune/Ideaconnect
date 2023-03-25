@@ -20,7 +20,7 @@ export class SocketGateway {
   @WebSocketServer()
   server: Server;
 
-  @SubscribeMessage('join')
+  /*  @SubscribeMessage('join')
   async join(
     @ConnectedSocket() client: Socket,
     @MessageBody() body: SocketConnectDto,
@@ -52,5 +52,5 @@ export class SocketGateway {
   ): Promise<void> {
     const result = await this.SocketService.send(client.id, body);
     this.server.to([result.roomname]).emit('message', result);
-  }
+  }*/
 }

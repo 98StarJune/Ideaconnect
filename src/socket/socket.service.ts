@@ -22,11 +22,11 @@ export class SocketService {
     private IdeaEntity: Repository<IdeaEntity>,
   ) {}
 
-  async connect(
+  /*async connect(
     id: string,
     body: SocketConnectDto,
-  ) /*: Promise<string | object>*/ {
-    /*try {
+  ) : Promise<string | object> {
+    try {
 
             const user = await this.UserEntity.findOneBy({ _id: body.jwtid });
             let room: RoomEntity;
@@ -49,13 +49,12 @@ export class SocketService {
               };
               await this.RoomEntity.save(Room);
             }
-            //연결된
-            /!*idea.connected_user += ',' + body.jwtid;
-            await this.IdeaEntity.save(idea);*!/
+            idea.connected_user += ',' + body.jwtid;
+            await this.IdeaEntity.save(idea);
             return //roomname;
           } catch (e) {
             return e;
-    }*/
+    }
   }
   async disconnect(
     id: string,
@@ -94,5 +93,5 @@ export class SocketService {
     return message;
   }
 
-  async roomname(body) {}
+  async roomname(body) {}*/
 }
