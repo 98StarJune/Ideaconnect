@@ -22,36 +22,40 @@ export class SocketService {
     private IdeaEntity: Repository<IdeaEntity>,
   ) {}
 
-  async connect(id: string, body: SocketConnectDto): Promise<string | object> {
-    try {
-      const roomname = body.idea_id + '_' + id;
-      const user = await this.UserEntity.findOneBy({ id: body.jwtid });
-      let room: RoomEntity;
-      /**일반 사용자 일 경우*/
-      if (user.common === true) {
-        room = await this.RoomEntity.findOneBy({ roomname });
-      } else {
-        room = await this.RoomEntity.findOneBy({
-          roomname,
-          commonfalseid: body.jwtid,
-        });
-      }
-      const idea = await this.IdeaEntity.findOneBy({ _id: body.idea_id });
-      if (!room) {
-        const Room = {
-          roomname,
-          commonid: idea._id,
-          commonfalseid: body.jwtid,
-        };
-        await this.RoomEntity.save(Room);
-      }
-      //연결된
-      /*idea.connected_user += ',' + body.jwtid;
-      await this.IdeaEntity.save(idea);*/
-      return roomname;
-    } catch (e) {
-      return e;
-    }
+  async connect(
+    id: string,
+    body: SocketConnectDto,
+  ) /*: Promise<string | object>*/ {
+    /*try {
+
+            const user = await this.UserEntity.findOneBy({ _id: body.jwtid });
+            let room: RoomEntity;
+            /!**일반 사용자 일 경우*!/
+            if (user.common === true) {
+              room = await this.RoomEntity.findOneBy({ roomname : body.roomname });
+            } else {
+              const roomname = body.idea_id + '_' + id;
+              room = await this.RoomEntity.findOneBy({
+                roomname,
+                commonfalseid: body.jwtid,
+              });
+            }
+            const idea = await this.IdeaEntity.findOneBy({ _id: body.idea_id });
+            if (!room) {
+              const Room = {
+                roomname: roomname
+                commonid: idea._id,
+                commonfalseid: body.jwtid,
+              };
+              await this.RoomEntity.save(Room);
+            }
+            //연결된
+            /!*idea.connected_user += ',' + body.jwtid;
+            await this.IdeaEntity.save(idea);*!/
+            return //roomname;
+          } catch (e) {
+            return e;
+    }*/
   }
   async disconnect(
     id: string,
@@ -89,4 +93,6 @@ export class SocketService {
     await this.MessageEntity.save(message);
     return message;
   }
+
+  async roomname(body) {}
 }
