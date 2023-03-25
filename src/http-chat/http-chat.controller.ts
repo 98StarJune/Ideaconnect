@@ -1,4 +1,4 @@
-import { Body, Controller, Post, Res, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Post, Res, UseGuards } from '@nestjs/common';
 import { JwtauthGuard } from '../jwtauth/jwtauth.guard';
 import { HttpChatService } from './http-chat.service';
 import { HttpchatCreateDto } from '../model/dto/request/httpchat/httpchat.create.dto';

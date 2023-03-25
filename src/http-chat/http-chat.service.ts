@@ -25,25 +25,24 @@ export class HttpChatService {
   async create(body: HttpchatCreateDto) {
     const roomname = body.id + '_' + body.jwtid;
     const user = await this.UserEntity.findOneBy({ _id: body.jwtid });
-    if (user === undefined) {
+    if (!user) {
       this.ERes.statusCode = 401;
     }
     const roominfo = await this.RoomEntity.findOneBy({ roomname: roomname });
-    if (roominfo !== undefined) {
+    if (roominfo) {
       this.Res.nickname = user.nickname;
       this.Res.roomname = roomname;
       this.Res.statusCode = 200;
       return this.Res;
     }
-    const ideainfo = await this.IdeaEntity.findOneBy({ _id: Number(body.id) });
-    if (ideainfo === undefined) {
+    const ideainfo = await this.IdeaEntity.findOneBy({ _id: body.id });
+    if (!ideainfo) {
       this.ERes.statusCode = 404;
       return this.ERes;
     }
-
     const roomvalue = {
       roomname: roomname,
-      commonid: Number(ideainfo.creator),
+      commonid: ideainfo.creator,
       commonfalseid: body.jwtid,
     };
     await this.RoomEntity.save(roomvalue);
