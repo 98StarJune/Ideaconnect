@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, Res, UseGuards } from '@nestjs/common';
+import { Body, Controller, Post, Res, UseGuards } from '@nestjs/common';
 import { JwtauthGuard } from '../jwtauth/jwtauth.guard';
 import { HttpChatService } from './http-chat.service';
 import { HttpchatCreateDto } from '../model/dto/request/httpchat/httpchat.create.dto';
@@ -19,7 +19,7 @@ export class HttpChatController {
   async create(@Body() body: HttpchatCreateDto, @Res() res: Response) {
     const result = await this.httpchatService.create(body);
     if (result === this.ERes) {
-      return res.status(this.ERes.statusCode);
+      return res.status(this.ERes.statusCode).json(this.ERes);
     }
     return res.status(this.Res.statusCode).json(this.Res);
   }
