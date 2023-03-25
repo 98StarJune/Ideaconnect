@@ -22,38 +22,33 @@ export class SocketService {
     private IdeaEntity: Repository<IdeaEntity>,
   ) {}
 
-  /*async connect(
-    id: string,
-    body: SocketConnectDto,
-  ) : Promise<string | object> {
+  async connect(id: string, body: SocketConnectDto): Promise<string | object> {
     try {
-
-            const user = await this.UserEntity.findOneBy({ _id: body.jwtid });
-            let room: RoomEntity;
-            /!**일반 사용자 일 경우*!/
-            if (user.common === true) {
-              room = await this.RoomEntity.findOneBy({ roomname : body.roomname });
-            } else {
-              const roomname = body.idea_id + '_' + id;
-              room = await this.RoomEntity.findOneBy({
-                roomname,
-                commonfalseid: body.jwtid,
-              });
-            }
-            const idea = await this.IdeaEntity.findOneBy({ _id: body.idea_id });
-            if (!room) {
-              const Room = {
-                roomname: roomname
-                commonid: idea._id,
-                commonfalseid: body.jwtid,
-              };
-              await this.RoomEntity.save(Room);
-            }
-            idea.connected_user += ',' + body.jwtid;
-            await this.IdeaEntity.save(idea);
-            return //roomname;
-          } catch (e) {
-            return e;
+      const roomname = body.idea_id + '_' + id;
+      const user = await this.UserEntity.findOneBy({ _id: body.jwtid });
+      let room: RoomEntity;
+      if (user.common === true) {
+        room = await this.RoomEntity.findOneBy({ roomname: body.roomname });
+      } else {
+        room = await this.RoomEntity.findOneBy({
+          roomname,
+          commonfalseid: body.jwtid,
+        });
+      }
+      const idea = await this.IdeaEntity.findOneBy({ _id: body.idea_id });
+      if (!room) {
+        const Room = {
+          roomname: roomname,
+          commonid: String(idea._id),
+          commonfalseid: body.jwtid,
+        };
+        await this.RoomEntity.save(Room);
+      }
+      idea.connected_user += ',' + body.jwtid;
+      await this.IdeaEntity.save(idea);
+      return; //roomname;
+    } catch (e) {
+      return e;
     }
   }
   async disconnect(
@@ -93,5 +88,5 @@ export class SocketService {
     return message;
   }
 
-  async roomname(body) {}*/
+  //async roomname(body) {}
 }
