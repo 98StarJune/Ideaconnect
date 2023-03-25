@@ -29,30 +29,43 @@ export class HttpChatService {
   async create(
     body: HttpchatCreateDto,
   ): Promise<ErrorResponseDto | chatCreateResponseDto> {
+    //룸 이름 : 게시글 고유 번호 + common false의 고유 번호
     const roomname = body.id + '_' + body.jwtid;
+    //고유 번호 기반 회원 조회
     const user = await this.UserEntity.findOneBy({ _id: body.jwtid });
     if (!user) {
+      //회원 정보가 없을 경우
       this.ERes.statusCode = 401;
+      return this.ERes;
     }
+    if (user.common === true) {
+      //아이디어 등록자 (common true)인 경우 거부 처리
+      this.ERes.statusCode = 402;
+      this.ERes.message = '아이디어 등록자는 사용할 수 없습니다.';
+      return this.ERes;
+    }
+    //룸 이름이 이미 생성되어 있는지 조회
     const roominfo = await this.RoomEntity.findOneBy({ roomname: roomname });
     if (roominfo) {
-      this.Res.nickname = user.nickname;
+      //이미 있는 경우의 반환
       this.Res.roomname = roomname;
       this.Res.statusCode = 200;
       return this.Res;
     }
+    //아이디어 고유번호 조회
     const ideainfo = await this.IdeaEntity.findOneBy({ _id: body.id });
     if (!ideainfo) {
+      //게시글이 존재하지 않는 경우
       this.ERes.statusCode = 404;
       return this.ERes;
     }
+    //회원 맞고, 아이디어 있고, 룸이 없을 경우 새롭게 생성
     const roomvalue = {
       roomname: roomname,
       commonid: ideainfo.creator,
       commonfalseid: body.jwtid,
     };
     await this.RoomEntity.save(roomvalue);
-    this.Res.nickname = user.nickname;
     this.Res.roomname = roomname;
     this.Res.statusCode = 201;
     return this.Res;
