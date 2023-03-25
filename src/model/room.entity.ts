@@ -6,8 +6,13 @@ export class RoomEntity {
   roomname: string;
 
   @Column()
-  commonid: string;
+  common_id: string;
+  @Column()
+  common_nick: string;
 
   @Column()
-  commonfalseid: string;
+  commonfalse_id: string;
+
+  @Column()
+  commonfalse_nick: string;
 }

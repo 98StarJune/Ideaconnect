@@ -32,7 +32,7 @@ export class SocketService {
       } else {
         room = await this.RoomEntity.findOneBy({
           roomname,
-          commonfalseid: body.jwtid,
+          commonfalse_id: body.jwtid,
         });
       }
       const idea = await this.IdeaEntity.findOneBy({ _id: body.idea_id });
@@ -40,7 +40,7 @@ export class SocketService {
         const Room = {
           roomname: roomname,
           commonid: String(idea._id),
-          commonfalseid: body.jwtid,
+          commonfalse_id: body.jwtid,
         };
         await this.RoomEntity.save(Room);
       }
@@ -59,7 +59,7 @@ export class SocketService {
       const roomname = body.idea_id + '_' + id;
       const result = await this.RoomEntity.findOneBy({
         roomname,
-        commonfalseid: body.jwtid,
+        commonfalse_id: body.jwtid,
       });
       if (!result) {
         return false;
@@ -73,7 +73,7 @@ export class SocketService {
     const roomname = body.idea_id + '_' + id;
     const roominfo = await this.RoomEntity.findOneBy({
       roomname: roomname,
-      commonfalseid: body.jwtid,
+      commonfalse_id: body.jwtid,
     });
     if (!roominfo) {
       throw new Error('일치하는 room 정보가 없습니다');

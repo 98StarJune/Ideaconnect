@@ -29,9 +29,10 @@ export class HttpChatService {
   async create(
     body: HttpchatCreateDto,
   ): Promise<ErrorResponseDto | chatCreateResponseDto> {
+    //Common 값이 False 인 투자자만 본 메서드를 이용할 수 있다.
     //룸 이름 : 게시글 고유 번호 + common false의 고유 번호
     const roomname = body.id + '_' + body.jwtid;
-    //고유 번호 기반 회원 조회
+    //고유 번호 기반 요청자 정보 조회
     const user = await this.UserEntity.findOneBy({ _id: body.jwtid });
     if (!user) {
       //회원 정보가 없을 경우
@@ -60,10 +61,15 @@ export class HttpChatService {
       return this.ERes;
     }
     //회원 맞고, 아이디어 있고, 룸이 없을 경우 새롭게 생성
+    const { nickname } = await this.UserEntity.findOneBy({
+      _id: ideainfo.creator,
+    });
     const roomvalue = {
       roomname: roomname,
-      commonid: ideainfo.creator,
-      commonfalseid: body.jwtid,
+      common_id: ideainfo.creator,
+      common_nick: nickname,
+      commonfalse_id: body.jwtid,
+      commonfalse_nick: user.nickname,
     };
     await this.RoomEntity.save(roomvalue);
     this.Res.roomname = roomname;
@@ -73,6 +79,13 @@ export class HttpChatService {
   async record(
     body: HttpchatRecordDto,
   ): Promise<ErrorResponseDto | DataResponseDto> {
+    const user = await this.UserEntity.findOneBy({ _id: body.jwtid });
+    if (!user) {
+      this.ERes.statusCode = 402;
+      this.ERes.message = '존재하지 않는 사용자입니다.';
+      return this.ERes;
+    }
+    //메세지 기록 조회
     const record = await this.MessageEntity.findBy({ roomname: body.roomname });
     //메세지 기록이 없을 경우 (undefine)
     if (!record[0]) {
@@ -81,6 +94,7 @@ export class HttpChatService {
     }
     this.DRes.statusCode = 200;
     this.DRes.data = record;
+    this.DRes.nickname = user.nickname;
     return this.DRes;
   }
 }
