@@ -10,6 +10,7 @@ import { IdeaEntity } from '../model/idea.entity';
 import { HttpchatRecordDto } from '../model/dto/request/httpchat/httpchat.record.dto';
 import { MessageEntity } from '../model/message.entity';
 import { DataResponseDto } from '../model/dto/response/data.response.dto';
+import { RoomDataInterface } from '../model/dto/interface/room.data.interface';
 
 @Injectable()
 export class HttpChatService {
@@ -85,16 +86,20 @@ export class HttpChatService {
       this.ERes.message = '존재하지 않는 사용자입니다.';
       return this.ERes;
     }
-    //메세지 기록 조회
+    //메세지 기록 조회 (Proxy 패턴 구현 생략)
     const record = await this.MessageEntity.findBy({ roomname: body.roomname });
     //메세지 기록이 없을 경우 (undefine)
     if (!record[0]) {
       this.ERes.statusCode = 404;
       return this.ERes;
     }
+    //룸 정보 조회
+    const room = await this.RoomEntity.findOneBy({
+      roomname: record[0].roomname,
+    });
     this.DRes.statusCode = 200;
-    this.DRes.data = record;
-    this.DRes.nickname = user.nickname;
+    this.DRes.chat_data = record;
+    this.DRes.room_data = room;
     return this.DRes;
   }
   async list(jwt): Promise<ErrorResponseDto | DataResponseDto> {
@@ -119,8 +124,25 @@ export class HttpChatService {
       this.ERes.statusCode = 404;
       return this.ERes;
     }
+    const data: RoomDataInterface[] = [];
+    for (const dataKey in rooms) {
+      //상대방의 정보만 담아서 response 하도록 배열에 저장
+      if (user.common === true) {
+        const temp: RoomDataInterface = {
+          id: rooms[dataKey].commonfalse_id,
+          nickname: rooms[dataKey].commonfalse_nick,
+        };
+        data.push(temp);
+      } else {
+        const temp: RoomDataInterface = {
+          id: rooms[dataKey].common_id,
+          nickname: rooms[dataKey].common_nick,
+        };
+        data.push(temp);
+      }
+    }
     this.DRes.statusCode = 200;
-    this.DRes.data = rooms;
+    this.DRes.room_data = data;
     return this.DRes;
   }
 }
