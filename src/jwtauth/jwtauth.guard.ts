@@ -14,14 +14,16 @@ export class JwtauthGuard implements CanActivate {
   canActivate(
     context: ExecutionContext,
   ): boolean | Promise<boolean> | Observable<boolean> {
+    //console.log('Jwt 진입');
     let isSocket: boolean;
     const req = context.switchToWs().getClient();
     if (req.handshake) {
       isSocket = true;
-      //console.log(req.handshake.headers.authorization);
+      //console.log(`소켓 : ${req.handshake}`);
+      //console.log(req.handshake.query.jwt);
     } else {
       isSocket = false;
-      //console.log(req.headers.authorization);
+      //console.log(`HTTP : ${req.headers.authorization}`);
     }
     let token, decoded;
     switch (isSocket) {

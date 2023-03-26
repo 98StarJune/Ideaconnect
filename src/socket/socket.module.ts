@@ -7,6 +7,8 @@ import { MessageEntity } from '../model/message.entity';
 import { SocketService } from './socket.service';
 import { UserEntity } from '../model/User.entity';
 import { IdeaEntity } from '../model/idea.entity';
+import { NormalResponseDto } from '../model/dto/response/normal.response.dto';
+import { ErrorResponseDto } from '../model/dto/response/error.response.dto';
 
 @Module({
   imports: [
@@ -15,6 +17,12 @@ import { IdeaEntity } from '../model/idea.entity';
     TypeOrmModule.forFeature([UserEntity]),
     TypeOrmModule.forFeature([IdeaEntity]),
   ],
-  providers: [JwtService, SocketGateway, SocketService],
+  providers: [
+    JwtService,
+    SocketGateway,
+    SocketService,
+    NormalResponseDto,
+    ErrorResponseDto,
+  ],
 })
 export class SocketModule {}
