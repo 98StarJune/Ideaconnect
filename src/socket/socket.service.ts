@@ -10,6 +10,7 @@ import { ErrorResponseDto } from '../model/dto/response/error.response.dto';
 import { SocketJoinDto } from '../model/dto/request/socket/socket.join.dto';
 import { SocketMessageDto } from '../model/dto/request/socket/socket.message.dto';
 import { SocketMessageInterface } from '../model/dto/interface/socket.message.interface';
+import { SocketJoinResponse } from '../model/dto/response/socket/socket.join.response';
 
 @Injectable()
 export class SocketService {
@@ -22,12 +23,20 @@ export class SocketService {
     private UserEntity: Repository<UserEntity>,
     @InjectRepository(IdeaEntity)
     private IdeaEntity: Repository<IdeaEntity>,
-    private Resp: NormalResponseDto,
+    private Resp: SocketJoinResponse,
     private EResp: ErrorResponseDto,
   ) {}
   async join(
     body: SocketJoinDto,
   ): Promise<NormalResponseDto | ErrorResponseDto> {
+    //회원 정보 조회
+    const user = await this.UserEntity.findOneBy({ _id: body.jwtid });
+    if (!user) {
+      //회원이 아닌 경우
+      this.EResp.statusCode = 401;
+      this.EResp.message = '존재하지 않는 회원입니다.';
+      return this.EResp;
+    }
     //생성된 Room Name이 있는지 조회
     const room = await this.RoomEntity.findOneBy({
       roomname: body.roomname,
@@ -47,6 +56,13 @@ export class SocketService {
       return this.EResp;
     }
     this.Resp.statusCode = 200;
+    if (user.common === true) {
+      this.Resp.nickname = room.commonfalse_nick;
+      this.Resp.id = room.commonfalse_id;
+    } else {
+      this.Resp.nickname = room.common_nick;
+      this.Resp.id = room.common_id;
+    }
     return this.Resp;
   }
   async message(body: SocketMessageDto): Promise<SocketMessageInterface> {

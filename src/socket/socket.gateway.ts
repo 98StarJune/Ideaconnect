@@ -13,13 +13,14 @@ import { NormalResponseDto } from '../model/dto/response/normal.response.dto';
 import { ErrorResponseDto } from '../model/dto/response/error.response.dto';
 import { SocketJoinDto } from '../model/dto/request/socket/socket.join.dto';
 import { SocketMessageDto } from '../model/dto/request/socket/socket.message.dto';
+import { SocketJoinResponse } from '../model/dto/response/socket/socket.join.response';
 
 @WebSocketGateway(8088, { cors: '*/*' })
 @UseGuards(JwtauthGuard)
 export class SocketGateway {
   constructor(
     private SocketService: SocketService,
-    private readonly Resp: NormalResponseDto,
+    private readonly Resp: SocketJoinResponse,
     private readonly EResp: ErrorResponseDto,
   ) {}
 
@@ -34,9 +35,10 @@ export class SocketGateway {
     console.log(body);
     const result = await this.SocketService.join(body);
     if (result === this.EResp) {
-      return this.server.emit('response', this.EResp);
+      return client.emit('response', this.EResp);
     }
     await client.join(body.roomname);
+    return client.emit('response', this.Resp);
   }
 
   @SubscribeMessage('message')

@@ -81,8 +81,10 @@ export class HttpChatService {
   async record(
     body: HttpchatRecordDto,
   ): Promise<ErrorResponseDto | DataResponseDto> {
+    //유저 정보 조회
     const user = await this.UserEntity.findOneBy({ _id: body.jwtid });
     if (!user) {
+      //등록된 유저가 아닌 경우
       this.ERes.statusCode = 402;
       this.ERes.message = '존재하지 않는 사용자입니다.';
       return this.ERes;

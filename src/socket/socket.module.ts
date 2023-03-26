@@ -7,8 +7,8 @@ import { MessageEntity } from '../model/message.entity';
 import { SocketService } from './socket.service';
 import { UserEntity } from '../model/User.entity';
 import { IdeaEntity } from '../model/idea.entity';
-import { NormalResponseDto } from '../model/dto/response/normal.response.dto';
 import { ErrorResponseDto } from '../model/dto/response/error.response.dto';
+import { SocketJoinResponse } from '../model/dto/response/socket/socket.join.response';
 
 @Module({
   imports: [
@@ -21,8 +21,8 @@ import { ErrorResponseDto } from '../model/dto/response/error.response.dto';
     JwtService,
     SocketGateway,
     SocketService,
-    NormalResponseDto,
     ErrorResponseDto,
+    SocketJoinResponse,
   ],
 })
 export class SocketModule {}
