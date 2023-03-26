@@ -5,7 +5,7 @@ import { RoomEntity } from '../model/room.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserEntity } from '../model/User.entity';
 import { ErrorResponseDto } from '../model/dto/response/error.response.dto';
-import { chatCreateResponseDto } from '../model/dto/response/chat.create.response.dto';
+import { chatCreateResponseDto } from '../model/dto/response/httpchat/chat.create.response.dto';
 import { IdeaEntity } from '../model/idea.entity';
 import { HttpchatRecordDto } from '../model/dto/request/httpchat/httpchat.record.dto';
 import { MessageEntity } from '../model/message.entity';

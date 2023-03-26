@@ -3,7 +3,7 @@ import { JwtauthGuard } from '../jwtauth/jwtauth.guard';
 import { HttpChatService } from './http-chat.service';
 import { HttpchatCreateDto } from '../model/dto/request/httpchat/httpchat.create.dto';
 import { Response } from 'express';
-import { chatCreateResponseDto } from '../model/dto/response/chat.create.response.dto';
+import { chatCreateResponseDto } from '../model/dto/response/httpchat/chat.create.response.dto';
 import { ErrorResponseDto } from '../model/dto/response/error.response.dto';
 import { HttpchatRecordDto } from '../model/dto/request/httpchat/httpchat.record.dto';
 import { DataResponseDto } from '../model/dto/response/data.response.dto';

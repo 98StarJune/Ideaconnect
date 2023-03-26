@@ -9,11 +9,11 @@ import { ErrorResponseDto } from '../model/dto/response/error.response.dto';
 import { AuthCheckDto } from '../model/dto/request/auth/auth.check.dto';
 import { AuthLoginDto } from '../model/dto/request/auth/auth.login.dto';
 import { JwtService } from '@nestjs/jwt';
-import { JwtResponseDto } from '../model/dto/response/jwt.response.dto';
+import { JwtResponseDto } from '../model/dto/response/auth/jwt.response.dto';
 import { IdeaEntity } from '../model/idea.entity';
 import { HttpService } from '@nestjs/axios';
 import { AuthGauthDto } from '../model/dto/request/auth/auth.gauth.dto';
-import { GauthJoinResponseDto } from '../model/dto/response/gauth.join.response.dto';
+import { GauthJoinResponseDto } from '../model/dto/response/auth/gauth.join.response.dto';
 import { AuthGjoinDto } from '../model/dto/request/auth/auth.gjoin.dto';
 
 @Injectable()
