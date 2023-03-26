@@ -129,12 +129,15 @@ export class HttpChatService {
       //상대방의 정보만 담아서 response 하도록 배열에 저장
       if (user.common === true) {
         const temp: RoomDataInterface = {
+          roomname: rooms[dataKey].roomname,
           id: rooms[dataKey].commonfalse_id,
           nickname: rooms[dataKey].commonfalse_nick,
         };
         data.push(temp);
       } else {
+        // console.log(rooms[dataKey].roonname)
         const temp: RoomDataInterface = {
+          roomname: rooms[dataKey].roomname,
           id: rooms[dataKey].common_id,
           nickname: rooms[dataKey].common_nick,
         };
