@@ -74,6 +74,7 @@ export class HttpChatService {
     };
     await this.RoomEntity.save(roomvalue);
     this.Res.roomname = roomname;
+    this.Res.nickname = ideainfo.creator;
     this.Res.statusCode = 201;
     return this.Res;
   }
