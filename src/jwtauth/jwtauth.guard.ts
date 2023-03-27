@@ -77,7 +77,7 @@ export class JwtauthGuard implements CanActivate {
           throw Error('알 수 없는 오류 발생');
         } catch (e) {
           if (e.name === 'TokenExpiredError') {
-            client.emit('jwt', {
+            client.emit('response', {
               statusCode: 400,
               message: '토큰이 만료되었습니다.',
             });

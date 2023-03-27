@@ -9,13 +9,13 @@ import { Server, Socket } from 'socket.io';
 import { UseGuards } from '@nestjs/common';
 import { JwtauthGuard } from '../jwtauth/jwtauth.guard';
 import { SocketService } from './socket.service';
-import { NormalResponseDto } from '../model/dto/response/normal.response.dto';
 import { ErrorResponseDto } from '../model/dto/response/error.response.dto';
 import { SocketJoinDto } from '../model/dto/request/socket/socket.join.dto';
 import { SocketMessageDto } from '../model/dto/request/socket/socket.message.dto';
 import { SocketJoinResponse } from '../model/dto/response/socket/socket.join.response';
+import * as process from 'process';
 
-@WebSocketGateway(8088, { cors: '*/*' })
+@WebSocketGateway(Number(process.env.SOCKET_PORT), { cors: '*/*' })
 @UseGuards(JwtauthGuard)
 export class SocketGateway {
   constructor(
