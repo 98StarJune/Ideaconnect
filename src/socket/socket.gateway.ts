@@ -15,7 +15,7 @@ import { SocketMessageDto } from '../model/dto/request/socket/socket.message.dto
 import { SocketJoinResponse } from '../model/dto/response/socket/socket.join.response';
 import * as process from 'process';
 
-@WebSocketGateway(Number(process.env.SOCKET_PORT), { cors: '*/*' })
+@WebSocketGateway({ cors: { origin: 'https://www.ideaconnect.site' } })
 @UseGuards(JwtauthGuard)
 export class SocketGateway {
   constructor(
