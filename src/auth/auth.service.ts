@@ -157,7 +157,7 @@ export class AuthService {
           client_id: process.env.CLIENTID,
           client_secret: process.env.CLIENTSECRET,
           grant_type: 'authorization_code',
-          redirect_uri: 'https://www.ideaconncect.site',
+          redirect_uri: 'https://www.ideaconnect.site',
         },
         {
           headers: {
